@@ -2931,57 +2931,105 @@ Résolu à la calculatrice :
 /* ============ CRITÈRES INTERACTIFS (exos info) ============ */
 /* Vérification heuristique par mots-clés : aide pédagogique, pas une note. */
 const EXO_INTERACTIVE = {
-  "x-i1": { criteres: [
-    { l: "Utilise une pile temporaire", k: ["tmp", "temp", "init_pile", "t_pile"] },
-    { l: "Dépile la pile source", k: ["depiler"] },
-    { l: "Ré-empile les éléments", k: ["empiler"] },
-    { l: "Recopie aussi dans la 2e pile (P2)", k: ["p2"] },
-    { l: "Gère le cas pile vide (boucle while)", k: ["pilevide", "vide", "while"] },
-  ]},
-  "x-i2": { criteres: [
-    { l: "Utilise une pile intermédiaire", k: ["pile", "empiler", "init_pile"] },
-    { l: "Défile la file", k: ["defiler"] },
-    { l: "Ré-enfile les éléments dans la file", k: ["enfiler"] },
-    { l: "Gère le cas file vide", k: ["filevide", "vide", "while"] },
-  ]},
-  "x-i3": { criteres: [
-    { l: "Ouvre le fichier (fopen)", k: ["fopen"] },
-    { l: "Vérifie le retour de fopen (NULL)", k: ["null"] },
-    { l: "Lit le fichier (fscanf / fgets)", k: ["fscanf", "fgets", "fread"] },
-    { l: "Empile les valeurs lues", k: ["empiler"] },
-    { l: "Ferme le fichier (fclose)", k: ["fclose"] },
-  ]},
-  "x-i4": { criteres: [
-    { l: "Parcourt la file source", k: ["defiler", "while"] },
-    { l: "Teste la parité d'un élément", k: ["% 2", "%2", "pair", "impair"] },
-    { l: "Enfile dans la bonne file", k: ["enfiler"] },
-    { l: "Gère le cas file vide", k: ["filevide", "vide"] },
-  ]},
-  "x-i5": { criteres: [
-    { l: "Défile les deux files", k: ["defiler"] },
-    { l: "Alterne entre les deux files", k: ["enfiler"] },
-    { l: "Gère des files de tailles différentes", k: ["filevide", "vide", "while"] },
-    { l: "Ne perd aucun élément (parcours complet)", k: ["while"] },
-  ]},
-  "x-i6": { criteres: [
-    { l: "Parcourt la file", k: ["defiler", "while"] },
-    { l: "Accumule la somme", k: ["+=", "somme", "total", "s ="] },
-    { l: "Restaure la file (ne la vide pas)", k: ["enfiler"] },
-    { l: "Gère le cas file vide", k: ["filevide", "vide"] },
-  ]},
-  "x-i7": { criteres: [
-    { l: "Alloue la mémoire avec malloc", k: ["malloc"] },
-    { l: "Vérifie le retour de malloc (NULL)", k: ["null"] },
-    { l: "Saisit les valeurs (scanf avec &)", k: ["scanf"] },
-    { l: "Utilise correctement les pointeurs", k: ["->", "*", "&"] },
-    { l: "Libère la mémoire avec free", k: ["free"] },
-  ]},
-  "x-i8": { criteres: [
-    { l: "Utilise la structure t_guichet", k: ["t_guichet", "guichet"] },
-    { l: "Alloue la mémoire si nécessaire", k: ["malloc"] },
-    { l: "Traite chaque guichet (boucle)", k: ["for", "while"] },
-    { l: "Libère la mémoire (free)", k: ["free"] },
-  ]},
+  "x-i1": {
+    func: "copierPile",
+    criteres: [
+      { l: "Utilise une pile temporaire", k: ["tmp", "temp", "init_pile", "t_pile"] },
+      { l: "Dépile la pile source", k: ["depiler"] },
+      { l: "Ré-empile les éléments", k: ["empiler"] },
+      { l: "Recopie aussi dans la 2e pile (P2)", k: ["p2"], w: ["empiler"] },
+      { l: "Gère le cas pile vide (boucle while)", k: ["pilevide", "!pilevide"], w: ["while", "vide"] },
+    ],
+    conseil: "Fais DEUX inversions : une pour copier, une pour que P1 retrouve son ordre initial.",
+    erreur: "Vider P1 sans la reconstituer — à la fin, P1 doit être intacte.",
+    fiches: ["i-pf"],
+  },
+  "x-i2": {
+    func: "inverserFile",
+    criteres: [
+      { l: "Utilise une pile intermédiaire", k: ["pile", "empiler", "init_pile"] },
+      { l: "Défile la file dans la pile", k: ["defiler"], w: ["while"] },
+      { l: "Ré-enfile les éléments depuis la pile", k: ["enfiler"], w: ["depiler"] },
+      { l: "Gère le cas file vide", k: ["filevide", "!filevide"], w: ["while", "vide"] },
+    ],
+    conseil: "Défiler dans une pile puis dépiler vers la file : la pile inverse l'ordre.",
+    erreur: "Défiler puis ré-enfiler directement ne change pas l'ordre — il faut passer par une pile.",
+    fiches: ["i-pf"],
+  },
+  "x-i3": {
+    func: "chargerPile",
+    criteres: [
+      { l: "Ouvre le fichier (fopen)", k: ["fopen"] },
+      { l: "Vérifie le retour de fopen (NULL)", k: ["null"], w: ["fopen"] },
+      { l: "Lit le fichier (fscanf / fgets)", k: ["fscanf", "fgets", "fread"] },
+      { l: "Empile les valeurs lues", k: ["empiler"] },
+      { l: "Ferme le fichier (fclose)", k: ["fclose"], w: ["fopen"] },
+    ],
+    conseil: "Teste toujours `if (f == NULL)` juste après le fopen.",
+    erreur: "Oublier fclose : on laisse un descripteur de fichier ouvert.",
+    fiches: ["i-fich"],
+  },
+  "x-i4": {
+    func: "diviserFile",
+    criteres: [
+      { l: "Parcourt la file source", k: ["defiler"], w: ["while"] },
+      { l: "Teste la parité d'un élément (% 2)", k: ["% 2", "%2", "pair", "impair"] },
+      { l: "Enfile dans la bonne file", k: ["enfiler"] },
+      { l: "Gère le cas file vide", k: ["filevide", "!filevide"], w: ["while", "vide"] },
+    ],
+    conseil: "`x % 2 == 0` sépare les pairs des impairs.",
+    erreur: "Vider la file source sans la reconstituer si l'énoncé demande de la garder.",
+    fiches: ["i-pf"],
+  },
+  "x-i5": {
+    func: "fusionnerFiles",
+    criteres: [
+      { l: "Défile les deux files", k: ["defiler"] },
+      { l: "Enfile en alternant les deux files", k: ["enfiler"] },
+      { l: "Gère des files de tailles différentes", k: ["filevide", "!filevide"], w: ["while", "vide"] },
+      { l: "Ne perd aucun élément (parcours complet)", k: ["while"], w: ["for"] },
+    ],
+    conseil: "Quand une file est vide, vide entièrement l'autre avant de t'arrêter.",
+    erreur: "S'arrêter dès qu'UNE file est vide : on perd la fin de l'autre file.",
+    fiches: ["i-pf"],
+  },
+  "x-i6": {
+    func: "sommeFile",
+    criteres: [
+      { l: "Parcourt la file", k: ["defiler"], w: ["while"] },
+      { l: "Accumule la somme", k: ["+=", "somme", "total"] },
+      { l: "Restaure la file (ne la vide pas)", k: ["enfiler"] },
+      { l: "Gère le cas file vide", k: ["filevide", "!filevide"], w: ["while", "vide"] },
+    ],
+    conseil: "Ré-enfile chaque élément après l'avoir lu pour ne pas détruire la file.",
+    erreur: "Renvoyer la bonne somme mais laisser la file vidée à la sortie.",
+    fiches: ["i-pf"],
+  },
+  "x-i7": {
+    func: "saisirReels",
+    criteres: [
+      { l: "Alloue la mémoire avec malloc", k: ["malloc"] },
+      { l: "Vérifie le retour de malloc (NULL)", k: ["null"], w: ["malloc"] },
+      { l: "Saisit les valeurs (scanf avec &)", k: ["scanf"] },
+      { l: "Manipule correctement les pointeurs", k: ["->", "*", "&"] },
+      { l: "Libère la mémoire avec free", k: ["free"], w: ["malloc"] },
+    ],
+    conseil: "Pour n réels : `malloc(n * sizeof(double))`, puis free à la fin.",
+    erreur: "Oublier free, ou ne pas tester `malloc == NULL`.",
+    fiches: ["i-alloc"],
+  },
+  "x-i8": {
+    func: "gererGuichets",
+    criteres: [
+      { l: "Utilise la structure t_guichet", k: ["t_guichet", "guichet"] },
+      { l: "Alloue la mémoire si nécessaire", k: ["malloc"] },
+      { l: "Traite chaque guichet (boucle)", k: ["for", "while"] },
+      { l: "Libère la mémoire (free)", k: ["free"], w: ["malloc"] },
+    ],
+    conseil: "Une boucle `for` sur le nombre de guichets, puis free à la fin.",
+    erreur: "Allouer dans la boucle sans libérer ensuite : fuite mémoire.",
+    fiches: ["i-struct", "i-alloc"],
+  },
 };
 
 /* ================== DOCUMENTS DU ZIP ================== */
@@ -4218,6 +4266,100 @@ const SUJETS = [...ANNALES, ...TRAINING];
 function sujetsOf(subjectId) {
   return SUJETS.filter((s) => s.subject === subjectId);
 }
+
+/* ===== CRITÈRES TERMINAL — questions de code des partiels/annales d'info ===== */
+const SUJET_Q_TERMINAL = {
+  "a-info-1:3.1": { func: "definir_t_patient", criteres: [
+    { l: "Déclare un type (struct / typedef)", k: ["struct", "typedef"] },
+    { l: "Numéro de sécu : tableau de 13 caractères", k: ["char", "13"] },
+    { l: "Nom : champ dynamique (pointeur char *)", k: ["char *", "char*", "*nom"] },
+    { l: "Priorité : entier", k: ["int"] },
+  ]},
+  "a-info-1:3.2": { func: "initPatient", criteres: [
+    { l: "Saisit le numéro de sécu", k: ["scanf", "fgets"] },
+    { l: "Alloue le nom dynamiquement (malloc)", k: ["malloc"] },
+    { l: "Vérifie le retour de malloc (NULL)", k: ["null"], w: ["malloc"] },
+    { l: "Initialise la priorité à 0", k: ["= 0", "=0"] },
+  ]},
+  "a-info-1:3.3": { func: "saisirPriorite", criteres: [
+    { l: "Saisit un entier (scanf)", k: ["scanf"] },
+    { l: "Boucle de blindage (while / do…while)", k: ["while", "do"] },
+    { l: "Teste l'intervalle 1 à 4", k: ["1", "4"] },
+  ]},
+  "a-info-1:3.4": { func: "gererPatient", criteres: [
+    { l: "Défile un patient de la file d'attente", k: ["defiler"] },
+    { l: "Demande sa priorité", k: ["priorit", "saisirpriorite"] },
+    { l: "Insère le patient dans le tas", k: ["inserer", "tas", "enfiler"] },
+  ]},
+  "a-info-1:3.5": { func: "main", criteres: [
+    { l: "Initialise la file et le tas", k: ["init"] },
+    { l: "Boucle pour enfiler 10 patients", k: ["for", "while"], w: ["enfiler"] },
+    { l: "Gère les patients", k: ["gererpatient", "gerer"] },
+    { l: "Libère toute la mémoire (free)", k: ["free", "liberer"] },
+  ]},
+  "a-info-2:Q3": { func: "definir_t_voiture", criteres: [
+    { l: "Déclare un type (struct / typedef)", k: ["struct", "typedef"] },
+    { l: "Plaque : chaîne dynamique (pointeur)", k: ["char *", "char*", "*plaque"] },
+    { l: "Heure d'arrivée : entier", k: ["int"] },
+    { l: "Indicateur prioritaire : entier (0/1)", k: ["int"] },
+  ]},
+  "a-info-2:Q8": { func: "autoriserEntree", criteres: [
+    { l: "Parcourt la file (courant)", k: ["courant", "->suiv", "->next"], w: ["while"] },
+    { l: "Teste l'indicateur prioritaire", k: ["prioritaire", "priorit"] },
+    { l: "Renvoie la première voiture prioritaire", k: ["return"] },
+    { l: "Sinon renvoie la tête de file", k: ["tete", "tête"], w: ["return"] },
+  ]},
+  "a-info-2:Q10": { func: "main", criteres: [
+    { l: "Enregistre 5 voitures (boucle)", k: ["for", "while"] },
+    { l: "Autorise selon la priorité", k: ["autoriserentree", "autoriser"] },
+    { l: "Libère la mémoire (free)", k: ["free", "liberer"] },
+  ]},
+  "t-info-1:2.1": { func: "definir_t_produit", criteres: [
+    { l: "Déclare un type (struct / typedef)", k: ["struct", "typedef"] },
+    { l: "Nom : chaîne dynamique (pointeur)", k: ["char *", "char*", "*nom"] },
+    { l: "Prix : réel (float / double)", k: ["float", "double"] },
+    { l: "Quantité : entier", k: ["int"] },
+  ]},
+  "t-info-1:2.2": { func: "initProduit", criteres: [
+    { l: "Alloue le nom dynamiquement (malloc)", k: ["malloc"] },
+    { l: "Vérifie le retour de malloc (NULL)", k: ["null"], w: ["malloc"] },
+    { l: "Saisit le prix et la quantité (scanf)", k: ["scanf"] },
+    { l: "Manipule le pointeur p correctement", k: ["p->", "->"] },
+  ]},
+  "t-info-1:3.1": { func: "compterChers", criteres: [
+    { l: "Parcourt la file", k: ["defiler"], w: ["while"] },
+    { l: "Teste le prix > 100", k: ["> 100", ">100", "prix"] },
+    { l: "Compte les produits chers", k: ["++", "+ 1", "+1"] },
+    { l: "Restaure la file (inchangée)", k: ["enfiler"] },
+  ]},
+  "t-info-1:3.2": { func: "main", criteres: [
+    { l: "Remplit une file de 5 produits", k: ["for", "while"], w: ["enfiler"] },
+    { l: "Compte les produits chers", k: ["compterchers", "compter"] },
+    { l: "Libère la mémoire (free)", k: ["free", "liberer"] },
+  ]},
+  "t-info-2:1.2": { func: "creerTableau", criteres: [
+    { l: "Alloue avec malloc (pas un tableau local)", k: ["malloc"] },
+    { l: "Borne de boucle correcte (i < n)", k: ["< n", "<n"] },
+    { l: "Retourne le pointeur alloué", k: ["return"] },
+    { l: "Vérifie le retour de malloc (NULL)", k: ["null"], w: ["malloc"] },
+  ]},
+  "t-info-2:2.1": { func: "compter", criteres: [
+    { l: "Cas de base (liste vide → 0)", k: ["null", "return 0"] },
+    { l: "Appel récursif sur la suite", k: ["compter(", "->suiv", "->next"] },
+    { l: "Ajoute 1 par maillon", k: ["1 +", "+ 1", "1+"] },
+  ]},
+  "t-info-2:2.2": { func: "libererListe", criteres: [
+    { l: "Parcourt la liste (version itérative)", k: ["while"] },
+    { l: "Sauvegarde le maillon suivant avant free", k: ["suiv", "temp", "tmp", "next"] },
+    { l: "Libère chaque maillon (free)", k: ["free"] },
+  ]},
+  "t-info-2:3.1": { func: "sauverEntiers", criteres: [
+    { l: "Ouvre le fichier (fopen)", k: ["fopen"] },
+    { l: "Vérifie le retour de fopen (NULL)", k: ["null"], w: ["fopen"] },
+    { l: "Écrit n puis les entiers (fprintf)", k: ["fprintf", "fputs", "fwrite"] },
+    { l: "Ferme le fichier (fclose)", k: ["fclose"], w: ["fopen"] },
+  ]},
+};
 
 /* ================== MODE DÉBUTANT — "je comprends rien" ================== */
 
@@ -8502,43 +8644,186 @@ function ExoList({ exos, progress, handlers }) {
   );
 }
 
+/* ============ TERMINAL DE PRATIQUE — CODE C ============ */
+function TerminalCodePractice({ storageKey, funcName, criteria, indice, correctionBlocks, conseil, erreur, fiches, go, forceCorrection }) {
+  const MONO = "'JetBrains Mono', monospace";
+  const [code, setCode] = useState(() => {
+    try { return eceStorage.get(storageKey) || ""; } catch (e) { return ""; }
+  });
+  const [ran, setRan] = useState(false);
+  const [showInd, setShowInd] = useState(false);
+  const [showCorr, setShowCorr] = useState(false);
+  const taRef = useRef(null);
+  const gutRef = useRef(null);
+
+  const save = (v) => { setCode(v); try { eceStorage.set(storageKey, v); } catch (e) {} };
+  const crit = criteria || [];
+  const evalC = (c) => {
+    const a = code.toLowerCase();
+    if (!code.trim()) return "absent";
+    if (c.k.some((k) => a.indexOf(String(k).toLowerCase()) !== -1)) return "ok";
+    if (c.w && c.w.some((k) => a.indexOf(String(k).toLowerCase()) !== -1)) return "warn";
+    return "absent";
+  };
+  const results = crit.map((c) => ({ l: c.l, st: evalC(c) }));
+  const okN = results.filter((r) => r.st === "ok").length;
+  const warnN = results.filter((r) => r.st === "warn").length;
+  const absN = results.filter((r) => r.st === "absent").length;
+  const total = crit.length || 1;
+  const pct = Math.round(((okN + warnN * 0.5) / total) * 100);
+  const empty = !code.trim();
+  const corrOpen = showCorr || forceCorrection;
+  const okFirst = results.find((r) => r.st === "ok");
+  const gapFirst = results.find((r) => r.st !== "ok");
+  const lower = (s) => s.charAt(0).toLowerCase() + s.slice(1);
+  const lineCount = Math.max(code.split("\n").length, 14);
+
+  const onKey = (e) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const el = e.target, s = el.selectionStart, en = el.selectionEnd;
+      save(code.slice(0, s) + "  " + code.slice(en));
+      requestAnimationFrame(() => { try { el.selectionStart = el.selectionEnd = s + 2; } catch (e2) {} });
+    }
+  };
+  const onScroll = (e) => { if (gutRef.current) gutRef.current.scrollTop = e.target.scrollTop; };
+  const tbtn = (bg, fg, bd) => ({
+    fontFamily: MONO, fontSize: 10.8, fontWeight: 700, cursor: "pointer",
+    padding: "6px 11px", borderRadius: 7, background: bg, color: fg, border: `1px solid ${bd}`,
+  });
+
+  return (
+    <div style={{ marginTop: 12 }}>
+      <div style={{ borderRadius: 10, overflow: "hidden", border: "1px solid #2a2f3d", background: "#0a0b0f" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 11px", background: "#13151c", borderBottom: "1px solid #2a2f3d" }}>
+          <span style={{ display: "flex", gap: 5 }}>
+            {["#ec5f53", "#e8c84a", "#5fcf8e"].map((c) => (
+              <span key={c} style={{ width: 9, height: 9, borderRadius: "50%", background: c, display: "block" }} />
+            ))}
+          </span>
+          <span style={{ fontFamily: MONO, fontSize: 11, color: "#8a93a6" }}>terminal.c</span>
+          <span style={{ marginLeft: "auto", fontFamily: MONO, fontSize: 9.3, color: "#5b6273" }}>
+            {funcName ? funcName + "()" : "langage C"}
+          </span>
+        </div>
+        <div style={{ display: "flex", maxHeight: 330, background: "#0a0b0f" }}>
+          <div ref={gutRef} style={{
+            overflow: "hidden", textAlign: "right", padding: "11px 8px 11px 10px",
+            fontFamily: MONO, fontSize: 12.3, lineHeight: "1.6em", color: "#3c4458",
+            userSelect: "none", flexShrink: 0, background: "#0d0f15", borderRight: "1px solid #1c2029",
+          }}>
+            {Array.from({ length: lineCount }, (_, i) => (
+              <div key={i} style={{ height: "1.6em" }}>{i + 1}</div>
+            ))}
+          </div>
+          <textarea
+            ref={taRef} value={code} onChange={(e) => save(e.target.value)}
+            onKeyDown={onKey} onScroll={onScroll} wrap="off" spellCheck={false}
+            placeholder={"// Écris ta fonction en C ici…\n// " + (funcName ? funcName + "(...) {" : "maFonction(...) {") + "\n//   ...\n// }"}
+            style={{
+              flex: 1, minWidth: 0, border: "none", outline: "none", resize: "vertical",
+              background: "#0a0b0f", color: "#d6dbe6", padding: "11px 12px",
+              fontFamily: MONO, fontSize: 12.3, lineHeight: "1.6em",
+              whiteSpace: "pre", overflow: "auto", minHeight: 160,
+            }} />
+        </div>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", padding: "8px 9px", background: "#13151c", borderTop: "1px solid #2a2f3d" }}>
+          <button onClick={() => setRan(true)} style={tbtn(T.green, "#08130c", T.green)}>▶ Run check</button>
+          <button onClick={() => setShowInd((s) => !s)} style={tbtn("#1c2029", T.yellow, "#2a2f3d")}>💡 {showInd ? "Cacher l'indice" : "Indice"}</button>
+          <button onClick={() => setShowCorr((s) => !s)} style={tbtn("#1c2029", T.cyan, "#2a2f3d")}>◉ Correction</button>
+          <button onClick={() => { save(""); setRan(false); }} style={tbtn("#1c2029", "#8a93a6", "#2a2f3d")}>↺ Réinitialiser</button>
+        </div>
+      </div>
+
+      {ran && (
+        <div style={{
+          marginTop: 9, background: "#0a0b0f", border: "1px solid #2a2f3d", borderRadius: 10,
+          padding: "11px 13px", fontFamily: MONO, fontSize: 11.6, lineHeight: 1.75, overflowX: "auto",
+        }}>
+          <div style={{ color: "#5b6273" }}>$ run check — {funcName ? funcName + "()" : "ta fonction"}</div>
+          {empty ? (
+            <div style={{ color: T.amber, marginTop: 3 }}>⚠️ Éditeur vide — écris ton code puis relance la vérification.</div>
+          ) : (
+            <>
+              {results.map((r, i) => (
+                <div key={i} style={{ color: r.st === "ok" ? T.green : r.st === "warn" ? T.amber : T.coral, whiteSpace: "pre-wrap" }}>
+                  {r.st === "ok" ? "✅" : r.st === "warn" ? "⚠️" : "❌"} {r.l}
+                </div>
+              ))}
+              <div style={{ marginTop: 6, fontWeight: 800, color: pct >= 70 ? T.green : pct >= 40 ? T.amber : T.coral }}>
+                Score estimé : {pct}%
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {ran && !empty && (
+        <div style={{ marginTop: 9, background: T.bg2, border: `1px solid ${T.line}`, borderRadius: 10, padding: "11px 13px" }}>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 8, fontFamily: MONO, fontSize: 11 }}>
+            <span style={{ color: T.green }}>✅ {okN} validé{okN > 1 ? "s" : ""}</span>
+            <span style={{ color: T.amber }}>⚠️ {warnN} à revoir</span>
+            <span style={{ color: T.coral }}>❌ {absN} absent{absN > 1 ? "s" : ""}</span>
+          </div>
+          <p style={{ fontSize: 12.4, color: T.txt, lineHeight: 1.55, margin: "0 0 7px" }}>
+            {okFirst ? `Tu as bien : ${lower(okFirst.l)}.` : "Aucun critère validé pour l'instant."}
+            {gapFirst ? ` Il reste à travailler : ${lower(gapFirst.l)}.` : " Tous les critères sont couverts — beau travail."}
+          </p>
+          {conseil && (
+            <p style={{ fontSize: 12, color: T.dim, lineHeight: 1.5, margin: "0 0 5px" }}>
+              💡 <b style={{ color: T.cyan }}>Conseil</b> — {conseil}
+            </p>
+          )}
+          {erreur && (
+            <p style={{ fontSize: 12, color: T.dim, lineHeight: 1.5, margin: "0 0 5px" }}>
+              ⚠️ <b style={{ color: T.amber }}>Erreur classique</b> — {erreur}
+            </p>
+          )}
+          {fiches && fiches.length > 0 && (
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 7 }}>
+              <span style={{ fontFamily: MONO, fontSize: 9.5, color: T.faint, alignSelf: "center" }}>FICHE :</span>
+              {fiches.map((fid) => {
+                const f = ALL_FICHES.find((x) => x.id === fid);
+                if (!f) return null;
+                return (
+                  <button key={fid} onClick={() => go && go({ view: "subject", id: f.subject, fiche: f.id })}
+                    style={{ fontFamily: MONO, fontSize: 10, color: T.cyan, background: `${T.cyan}14`, border: `1px solid ${T.cyan}44`, borderRadius: 6, padding: "3px 8px", cursor: go ? "pointer" : "default" }}>
+                    {f.title} ›
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {!corrOpen && (
+            <button onClick={() => setShowCorr(true)} style={{ ...primBtn(T.green), marginTop: 9 }}>
+              ◉ Voir la correction complète
+            </button>
+          )}
+        </div>
+      )}
+
+      {showInd && indice && (
+        <div style={{ marginTop: 9, background: "rgba(232,200,74,0.08)", border: `1px solid ${T.yellow}44`, borderRadius: 9, padding: "9px 12px" }}>
+          <PanelLabel color={T.yellow}>Indice</PanelLabel>
+          <div style={{ fontSize: 12.6, color: T.txt, lineHeight: 1.55 }}>{indice}</div>
+        </div>
+      )}
+
+      {corrOpen && correctionBlocks && (
+        <div style={{ marginTop: 9, background: "rgba(95,207,142,0.06)", border: `1px solid ${T.green}38`, borderRadius: 9, padding: "10px 13px" }}>
+          <PanelLabel color={T.green}>Correction complète</PanelLabel>
+          {correctionBlocks.map((b, i) => <Block key={i} b={b} color={T.green} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function InteractiveExoView({ exo, sj, back, progress, handlers }) {
   const inter = EXO_INTERACTIVE[exo.id];
-  const KEY = "ece-ans-" + exo.id;
-  const [tab, setTab] = useState("enonce");
-  const [answer, setAnswer] = useState(() => {
-    try { return eceStorage.get(KEY) || ""; } catch (e) { return ""; }
-  });
-  const [verified, setVerified] = useState(false);
-  const [showCorr, setShowCorr] = useState(false);
   const done = (progress.exos || []).includes(exo.id);
   const topRef = useRef(null);
   useEffect(() => { if (topRef.current) topRef.current.scrollIntoView({ block: "start" }); }, []);
-
-  const save = (v) => { setAnswer(v); try { eceStorage.set(KEY, v); } catch (e) {} };
-  const a = answer.toLowerCase();
-  const results = inter.criteres.map((c) => ({
-    l: c.l,
-    ok: answer.trim().length > 0 && c.k.some((k) => a.includes(k.toLowerCase())),
-  }));
-  const score = results.filter((r) => r.ok).length;
-  const total = results.length;
-  const allOk = score === total;
-
-  const TABS = [
-    { id: "enonce", l: "Énoncé" },
-    { id: "reponse", l: "Ma réponse" },
-    { id: "indice", l: "Indice" },
-    { id: "criteres", l: "Critères" },
-    { id: "correction", l: "Correction" },
-  ];
-
-  const SubTitle = ({ children, color }) => (
-    <div style={{
-      fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700,
-      color: color || sj.color, letterSpacing: 0.8, margin: "0 0 7px",
-    }}>{children}</div>
-  );
 
   return (
     <div ref={topRef}>
@@ -8551,187 +8836,45 @@ function InteractiveExoView({ exo, sj, back, progress, handlers }) {
           <span style={{
             fontSize: 9.5, color: T.cyan, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
             background: `${T.cyan}1a`, border: `1px solid ${T.cyan}55`, borderRadius: 5, padding: "2px 7px",
-          }}>● INTERACTIF</span>
+          }}>● MODE TERMINAL</span>
         </div>
         <h2 style={{ ...titleSt(19), marginTop: 5 }}>{exo.title}</h2>
       </div>
 
-      {/* onglets */}
-      <div style={{ display: "flex", gap: 5, overflowX: "auto", paddingBottom: 6, marginBottom: 12 }}>
-        {TABS.map((t) => {
-          const on = tab === t.id;
-          return (
-            <button key={t.id} onClick={() => setTab(t.id)}
-              style={{
-                fontFamily: "'JetBrains Mono', monospace", fontSize: 11.5, fontWeight: 700,
-                padding: "7px 12px", borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap",
-                background: on ? sj.color : T.bg3,
-                color: on ? T.bg : T.dim,
-                border: `1px solid ${on ? sj.color : T.line}`,
-              }}>
-              {t.l}{t.id === "criteres" && verified ? ` ${score}/${total}` : ""}
-            </button>
-          );
-        })}
+      <div style={panelSt()}>
+        <PanelLabel color={sj.color}>Énoncé</PanelLabel>
+        {exo.enonce.map((b, i) => <Block key={i} b={b} color={sj.color} />)}
+      </div>
+      <div style={panelSt()}>
+        <PanelLabel color={T.cyan}>Méthode conseillée</PanelLabel>
+        <ol style={{ margin: "3px 0", paddingLeft: 19 }}>
+          {exo.methode.map((m, i) => (
+            <li key={i} style={{ fontSize: 13, color: T.txt, lineHeight: 1.6, margin: "4px 0" }}>{m}</li>
+          ))}
+        </ol>
       </div>
 
-      {/* ÉNONCÉ */}
-      {tab === "enonce" && (
-        <div>
-          <div style={panelSt()}>
-            <PanelLabel color={sj.color}>Énoncé</PanelLabel>
-            {exo.enonce.map((b, i) => <Block key={i} b={b} color={sj.color} />)}
-          </div>
-          <div style={panelSt()}>
-            <PanelLabel color={T.cyan}>Méthode conseillée</PanelLabel>
-            <ol style={{ margin: "3px 0", paddingLeft: 19 }}>
-              {exo.methode.map((m, i) => (
-                <li key={i} style={{ fontSize: 13, color: T.txt, lineHeight: 1.6, margin: "4px 0" }}>{m}</li>
-              ))}
-            </ol>
-          </div>
-          <button onClick={() => setTab("reponse")} style={{ ...primBtn(sj.color), width: "100%" }}>
-            ✎ Écrire ma réponse →
-          </button>
-        </div>
-      )}
+      <div style={{
+        fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: T.faint,
+        letterSpacing: 1, margin: "4px 0 0",
+      }}>
+        ÉCRIS TA RÉPONSE EN C — VÉRIFICATION PAR CRITÈRES
+      </div>
+      <TerminalCodePractice
+        storageKey={"ece-ans-" + exo.id}
+        funcName={inter.func}
+        criteria={inter.criteres}
+        indice={exo.indice}
+        correctionBlocks={exo.correction}
+        conseil={inter.conseil}
+        erreur={inter.erreur}
+        fiches={inter.fiches}
+        go={handlers.go} />
 
-      {/* MA RÉPONSE */}
-      {tab === "reponse" && (
-        <div>
-          <div style={panelSt()}>
-            <PanelLabel color={T.cyan}>Ma réponse</PanelLabel>
-            <p style={{ fontSize: 11.7, color: T.dim, lineHeight: 1.5, margin: "0 0 8px" }}>
-              Écris ta réponse ci-dessous (code C ou pseudo-code). Elle est sauvegardée
-              automatiquement sur cet appareil.
-            </p>
-            <textarea
-              value={answer}
-              onChange={(e) => save(e.target.value)}
-              spellCheck={false}
-              placeholder="// Écris ton code ici..."
-              style={{
-                width: "100%", minHeight: 230, resize: "vertical", boxSizing: "border-box",
-                background: T.bg, color: T.txt, border: `1px solid ${T.line}`, borderRadius: 9,
-                padding: "11px 12px", fontFamily: "'JetBrains Mono', monospace", fontSize: 12.3,
-                lineHeight: 1.55, outline: "none",
-              }} />
-            <div style={{ display: "flex", gap: 8, marginTop: 9, flexWrap: "wrap" }}>
-              <button onClick={() => { setVerified(true); setTab("criteres"); }} style={primBtn(sj.color)}>
-                ✓ Vérifier ma réponse
-              </button>
-              <button onClick={() => save("")} style={ghostBtn()}>Effacer</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* INDICE */}
-      {tab === "indice" && (
-        <div style={{
-          background: "rgba(232,200,74,0.08)", border: `1px solid ${T.yellow}44`,
-          borderRadius: 10, padding: "12px 14px",
-        }}>
-          <PanelLabel color={T.yellow}>Indice</PanelLabel>
-          <div style={{ fontSize: 13, color: T.txt, lineHeight: 1.6 }}>{exo.indice}</div>
-        </div>
-      )}
-
-      {/* CRITÈRES */}
-      {tab === "criteres" && (
-        <div>
-          {!verified ? (
-            <div style={panelSt()}>
-              <PanelLabel color={sj.color}>Critères attendus</PanelLabel>
-              <p style={{ fontSize: 12, color: T.dim, lineHeight: 1.5, margin: "0 0 8px" }}>
-                Voici les points que ta réponse doit contenir. Écris ta réponse puis
-                clique sur « Vérifier ».
-              </p>
-              {inter.criteres.map((c, i) => (
-                <div key={i} style={{ display: "flex", gap: 8, margin: "5px 0", fontSize: 12.5, color: T.txt }}>
-                  <span style={{ color: T.faint }}>○</span>{c.l}
-                </div>
-              ))}
-              <button onClick={() => setTab("reponse")} style={{ ...primBtn(sj.color), marginTop: 9 }}>
-                ✎ Aller à ma réponse
-              </button>
-            </div>
-          ) : (
-            <div>
-              <div style={{
-                background: `${(allOk ? T.green : score > 0 ? T.amber : T.coral)}14`,
-                border: `1px solid ${(allOk ? T.green : score > 0 ? T.amber : T.coral)}55`,
-                borderRadius: 11, padding: "13px 15px", marginBottom: 11, textAlign: "center",
-              }}>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 26, fontWeight: 800, color: allOk ? T.green : score > 0 ? T.amber : T.coral }}>
-                  {score} / {total}
-                </div>
-                <div style={{ fontSize: 12, color: T.dim, marginTop: 2 }}>
-                  {allOk ? "Tous les critères sont présents — solide !"
-                    : score > 0 ? "Bonne base : complète les points manquants ci-dessous."
-                    : "Reprends l'énoncé et la méthode, puis réessaie."}
-                </div>
-              </div>
-              <div style={panelSt()}>
-                <PanelLabel color={sj.color}>Détail des critères</PanelLabel>
-                {results.map((r, i) => (
-                  <div key={i} style={{
-                    display: "flex", gap: 9, alignItems: "flex-start", padding: "7px 0",
-                    borderBottom: i < results.length - 1 ? `1px solid ${T.line}` : "none",
-                  }}>
-                    <span style={{
-                      width: 19, height: 19, borderRadius: 5, flexShrink: 0,
-                      background: r.ok ? `${T.green}22` : `${T.coral}1c`,
-                      color: r.ok ? T.green : T.coral, fontSize: 12, fontWeight: 800,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>{r.ok ? "✓" : "✗"}</span>
-                    <span style={{ fontSize: 12.5, color: r.ok ? T.txt : T.dim, lineHeight: 1.45 }}>{r.l}</span>
-                  </div>
-                ))}
-                <p style={{ fontSize: 10.5, color: T.faint, lineHeight: 1.5, margin: "9px 0 0", fontStyle: "italic" }}>
-                  Vérification heuristique par mots-clés : c'est une aide à la relecture,
-                  pas une note. Compare toujours avec la correction.
-                </p>
-              </div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <button onClick={() => setTab("reponse")} style={ghostBtn()}>✎ Modifier ma réponse</button>
-                <button onClick={() => { setShowCorr(true); setTab("correction"); }} style={primBtn(T.green)}>
-                  ◉ Voir la correction complète
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* CORRECTION */}
-      {tab === "correction" && (
-        <div>
-          {!showCorr ? (
-            <div style={panelSt()}>
-              <PanelLabel color={T.green}>Correction</PanelLabel>
-              <p style={{ fontSize: 12.3, color: T.dim, lineHeight: 1.55, margin: "0 0 10px" }}>
-                Essaie d'abord de répondre toi-même et de vérifier tes critères. La correction
-                complète reste plus efficace une fois que tu as tenté l'exercice.
-              </p>
-              <button onClick={() => setShowCorr(true)} style={{ ...primBtn(T.green), width: "100%" }}>
-                Afficher la correction complète
-              </button>
-            </div>
-          ) : (
-            <div>
-              <div style={panelSt()}>
-                <PanelLabel color={T.green}>Correction</PanelLabel>
-                {exo.correction.map((b, i) => <Block key={i} b={b} color={T.green} />)}
-              </div>
-              <button onClick={() => handlers.markExo(exo.id)}
-                style={{ ...primBtn(done ? T.faint : T.green), width: "100%" }}>
-                {done ? "✓ Exercice marqué comme fait" : "Marquer comme fait"}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+      <button onClick={() => handlers.markExo(exo.id)}
+        style={{ ...primBtn(done ? T.faint : T.green), width: "100%", marginTop: 11 }}>
+        {done ? "✓ Exercice marqué comme fait" : "Marquer comme fait"}
+      </button>
     </div>
   );
 }
@@ -9602,6 +9745,7 @@ function TrainingRunner({ sujet, back, timed, onQuit, onComplete, go }) {
             const checked = !!checks[key];
             const isRevoir = !!revoir[key];
             const big = parseFloat(it.pts) >= 3;
+            const term = sujet.subject === "info" ? SUJET_Q_TERMINAL[sujet.id + ":" + it.n] : null;
             return (
               <ExamQuestion key={key} n={it.n} pts={it.pts} sj={sj} big={big}
                 checked={checked} onCheck={() => setChecks((c) => ({ ...c, [key]: !c[key] }))}
@@ -9610,31 +9754,51 @@ function TrainingRunner({ sujet, back, timed, onQuit, onComplete, go }) {
                   {it.q.map((b, j) => <Block key={j} b={b} color={sj.color} />)}
                 </div>
 
-                {mode === "entrainement" && (!showInd || !showCorr) && (
-                  <div style={{
-                    display: "flex", gap: 8, marginTop: 11, flexWrap: "wrap",
-                    paddingTop: 10, borderTop: `1px solid ${T.line}`,
-                  }}>
-                    {!showInd && it.indice && (
-                      <button onClick={() => setKey(key, "indice")} style={ghostBtn()}>💡 Voir l'indice</button>
+                {term ? (
+                  <>
+                    <div style={{
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: 9.5, color: T.cyan,
+                      letterSpacing: 0.8, marginTop: 11,
+                    }}>▶ RÉPONDRE DANS LE TERMINAL</div>
+                    <TerminalCodePractice
+                      storageKey={"ece-ans-" + sujet.id + "-" + it.n}
+                      funcName={term.func}
+                      criteria={term.criteres}
+                      indice={it.indice}
+                      correctionBlocks={it.c}
+                      fiches={sujet.revision && sujet.revision.fiches}
+                      go={go}
+                      forceCorrection={mode === "correction"} />
+                  </>
+                ) : (
+                  <>
+                    {mode === "entrainement" && (!showInd || !showCorr) && (
+                      <div style={{
+                        display: "flex", gap: 8, marginTop: 11, flexWrap: "wrap",
+                        paddingTop: 10, borderTop: `1px solid ${T.line}`,
+                      }}>
+                        {!showInd && it.indice && (
+                          <button onClick={() => setKey(key, "indice")} style={ghostBtn()}>💡 Voir l'indice</button>
+                        )}
+                        {!showCorr && (
+                          <button onClick={() => setKey(key, "corr")} style={primBtn(sj.color)}>Voir la correction</button>
+                        )}
+                      </div>
                     )}
-                    {!showCorr && (
-                      <button onClick={() => setKey(key, "corr")} style={primBtn(sj.color)}>Voir la correction</button>
-                    )}
-                  </div>
-                )}
 
-                {showInd && it.indice && (
-                  <div style={{
-                    background: "rgba(232,200,74,0.08)", border: `1px solid ${T.yellow}44`,
-                    borderRadius: 9, padding: "9px 12px", marginTop: 10,
-                  }}>
-                    <PanelLabel color={T.yellow}>Indice</PanelLabel>
-                    <div style={{ fontSize: 12.7, color: T.txt, lineHeight: 1.55 }}>{it.indice}</div>
-                  </div>
-                )}
-                {showCorr && (
-                  <ExamCorrection blocks={it.c} fiches={sujet.revision && sujet.revision.fiches} go={go} />
+                    {showInd && it.indice && (
+                      <div style={{
+                        background: "rgba(232,200,74,0.08)", border: `1px solid ${T.yellow}44`,
+                        borderRadius: 9, padding: "9px 12px", marginTop: 10,
+                      }}>
+                        <PanelLabel color={T.yellow}>Indice</PanelLabel>
+                        <div style={{ fontSize: 12.7, color: T.txt, lineHeight: 1.55 }}>{it.indice}</div>
+                      </div>
+                    )}
+                    {showCorr && (
+                      <ExamCorrection blocks={it.c} fiches={sujet.revision && sujet.revision.fiches} go={go} />
+                    )}
+                  </>
                 )}
               </ExamQuestion>
             );
@@ -10715,6 +10879,7 @@ export default function App() {
   };
 
   const go = (r) => { setNavMenu(null); setRoute(typeof r === "string" ? { view: r } : r); };
+  handlers.go = go;
 
   return (
     <div style={{
