@@ -2928,6 +2928,62 @@ Résolu à la calculatrice :
     ]},
 ];
 
+/* ============ CRITÈRES INTERACTIFS (exos info) ============ */
+/* Vérification heuristique par mots-clés : aide pédagogique, pas une note. */
+const EXO_INTERACTIVE = {
+  "x-i1": { criteres: [
+    { l: "Utilise une pile temporaire", k: ["tmp", "temp", "init_pile", "t_pile"] },
+    { l: "Dépile la pile source", k: ["depiler"] },
+    { l: "Ré-empile les éléments", k: ["empiler"] },
+    { l: "Recopie aussi dans la 2e pile (P2)", k: ["p2"] },
+    { l: "Gère le cas pile vide (boucle while)", k: ["pilevide", "vide", "while"] },
+  ]},
+  "x-i2": { criteres: [
+    { l: "Utilise une pile intermédiaire", k: ["pile", "empiler", "init_pile"] },
+    { l: "Défile la file", k: ["defiler"] },
+    { l: "Ré-enfile les éléments dans la file", k: ["enfiler"] },
+    { l: "Gère le cas file vide", k: ["filevide", "vide", "while"] },
+  ]},
+  "x-i3": { criteres: [
+    { l: "Ouvre le fichier (fopen)", k: ["fopen"] },
+    { l: "Vérifie le retour de fopen (NULL)", k: ["null"] },
+    { l: "Lit le fichier (fscanf / fgets)", k: ["fscanf", "fgets", "fread"] },
+    { l: "Empile les valeurs lues", k: ["empiler"] },
+    { l: "Ferme le fichier (fclose)", k: ["fclose"] },
+  ]},
+  "x-i4": { criteres: [
+    { l: "Parcourt la file source", k: ["defiler", "while"] },
+    { l: "Teste la parité d'un élément", k: ["% 2", "%2", "pair", "impair"] },
+    { l: "Enfile dans la bonne file", k: ["enfiler"] },
+    { l: "Gère le cas file vide", k: ["filevide", "vide"] },
+  ]},
+  "x-i5": { criteres: [
+    { l: "Défile les deux files", k: ["defiler"] },
+    { l: "Alterne entre les deux files", k: ["enfiler"] },
+    { l: "Gère des files de tailles différentes", k: ["filevide", "vide", "while"] },
+    { l: "Ne perd aucun élément (parcours complet)", k: ["while"] },
+  ]},
+  "x-i6": { criteres: [
+    { l: "Parcourt la file", k: ["defiler", "while"] },
+    { l: "Accumule la somme", k: ["+=", "somme", "total", "s ="] },
+    { l: "Restaure la file (ne la vide pas)", k: ["enfiler"] },
+    { l: "Gère le cas file vide", k: ["filevide", "vide"] },
+  ]},
+  "x-i7": { criteres: [
+    { l: "Alloue la mémoire avec malloc", k: ["malloc"] },
+    { l: "Vérifie le retour de malloc (NULL)", k: ["null"] },
+    { l: "Saisit les valeurs (scanf avec &)", k: ["scanf"] },
+    { l: "Utilise correctement les pointeurs", k: ["->", "*", "&"] },
+    { l: "Libère la mémoire avec free", k: ["free"] },
+  ]},
+  "x-i8": { criteres: [
+    { l: "Utilise la structure t_guichet", k: ["t_guichet", "guichet"] },
+    { l: "Alloue la mémoire si nécessaire", k: ["malloc"] },
+    { l: "Traite chaque guichet (boucle)", k: ["for", "while"] },
+    { l: "Libère la mémoire (free)", k: ["free"] },
+  ]},
+};
+
 /* ================== DOCUMENTS DU ZIP ================== */
 
 const DOCS = [
@@ -3228,44 +3284,25 @@ const TRAINING = [
     tags: ["DL", "intégrales", "limites"],
     parts: [
       { title: "Exercice 1 — Développements limités", items: [
-        { n: "1.1", pts: "3 pts", q: [{ t: "p", v: "Donner le DL(0, 4) de cos(x)." }],
+        { n: "1.1", pts: "3 pts", q: [{ t: "p", v: "Donner le développement limité à l'ordre 4 en 0 de $\\cos(x)$." }],
           indice: "cos n'a que des termes pairs.",
-          c: [{ t: "code", v: `cos(x) = 1 − x²/2! + x⁴/4! + o(x⁴)
-       = 1 − x²/2 + x⁴/24 + o(x⁴)` }] },
-        { n: "1.2", pts: "4 pts", q: [{ t: "p", v: "Calculer le DL(0, 3) de f(x) = ln(1+x) · eˣ." }],
+          c: [{ t: "p", v: "Le développement limité de $\\cos$ ne contient que des termes pairs :" }, { t: "formula", tex: ["\\cos(x) = 1 - \\frac{x^2}{2!} + \\frac{x^4}{4!} + o(x^4)", "\\cos(x) = 1 - \\frac{x^2}{2} + \\frac{x^4}{24} + o(x^4)"] }] },
+        { n: "1.2", pts: "4 pts", q: [{ t: "p", v: "Calculer le développement limité à l'ordre 3 en 0 de $f(x) = \\ln(1+x)\\, e^x$." }],
           indice: "DL à l'ordre 3 de chaque facteur, puis produit tronqué.",
-          c: [{ t: "code", v: `ln(1+x) = x − x²/2 + x³/3 + o(x³)
-eˣ      = 1 + x + x²/2 + o(x³)
-
-Produit (jusqu'à x³) :
-f(x) = x + x² + x³/2
-       − x²/2 − x³/2
-       + x³/3
-     = x + x²/2 + x³/3 + o(x³)` }] },
+          c: [{ t: "p", v: "On écrit le DL à l'ordre 3 de chaque facteur :" }, { t: "formula", tex: ["\\ln(1+x) = x - \\frac{x^2}{2} + \\frac{x^3}{3} + o(x^3)", "e^x = 1 + x + \\frac{x^2}{2} + o(x^3)"] }, { t: "p", v: "On effectue le produit en ne gardant que les termes jusqu'à $x^3$ :" }, { t: "formula", tex: "f(x) = x + \\frac{x^2}{2} + \\frac{x^3}{3} + o(x^3)" }] },
       ]},
       { title: "Exercice 2 — Limite", items: [
-        { n: "2.1", pts: "4 pts", q: [{ t: "p", v: "Calculer lim(x→0) (sin x − x) / x³." }],
+        { n: "2.1", pts: "4 pts", q: [{ t: "p", v: "Calculer la limite suivante :" }, { t: "formula", tex: "\\lim_{x \\to 0} \\frac{\\sin x - x}{x^3}" }],
           indice: "DL de sin(x) à l'ordre 3.",
-          c: [{ t: "code", v: `sin(x) = x − x³/6 + o(x³)
-sin(x) − x = −x³/6 + o(x³)
-
-(sin x − x)/x³ = −1/6 + o(1)
-
-lim = −1/6` }] },
+          c: [{ t: "p", v: "On utilise le DL de $\\sin$ à l'ordre 3 :" }, { t: "formula", tex: ["\\sin(x) = x - \\frac{x^3}{6} + o(x^3)", "\\sin(x) - x = -\\frac{x^3}{6} + o(x^3)", "\\frac{\\sin x - x}{x^3} = -\\frac{1}{6} + o(1)"] }, { t: "p", v: "La limite vaut donc :" }, { t: "formula", tex: "\\lim_{x \\to 0} \\frac{\\sin x - x}{x^3} = -\\frac{1}{6}" }] },
       ]},
       { title: "Exercice 3 — Intégrales généralisées", items: [
-        { n: "3.1", pts: "4 pts", q: [{ t: "p", v: "Étudier la nature de ∫₁^{+∞} dx/(x³ + 1)." }],
+        { n: "3.1", pts: "4 pts", q: [{ t: "p", v: "Étudier la nature de l'intégrale suivante :" }, { t: "formula", tex: "\\int_1^{+\\infty} \\frac{dx}{x^3 + 1}" }],
           indice: "Équivalent en +∞ puis comparaison à Riemann.",
-          c: [{ t: "code", v: `En +∞ : 1/(x³+1) ∼ 1/x³
-∫₁^∞ dx/x³ : Riemann α = 3 > 1 → converge.
-Par équivalence, l'intégrale CONVERGE.` }] },
-        { n: "3.2", pts: "5 pts", q: [{ t: "p", v: "Calculer ∫₀^{+∞} e^(−x) dx (montrer la convergence et donner la valeur)." }],
+          c: [{ t: "p", v: "En $+\\infty$, on cherche un équivalent simple :" }, { t: "formula", tex: "\\frac{1}{x^3 + 1} \\sim \\frac{1}{x^3}" }, { t: "p", v: "L'intégrale de référence est une intégrale de Riemann en $+\\infty$ avec $\\alpha = 3 > 1$ : elle converge. Par équivalence de fonctions positives, l'intégrale étudiée converge." }] },
+        { n: "3.2", pts: "5 pts", q: [{ t: "p", v: "Calculer l'intégrale suivante (en justifiant la convergence) :" }, { t: "formula", tex: "\\int_0^{+\\infty} e^{-x}\\, dx" }],
           indice: "Primitive de e^(−x), puis limite.",
-          c: [{ t: "code", v: `∫₀^X e^(−x) dx = [−e^(−x)]₀^X = 1 − e^(−X)
-
-lim(X→+∞) (1 − e^(−X)) = 1   (finie)
-
-⟹ l'intégrale converge et vaut 1.` }] },
+          c: [{ t: "p", v: "On calcule l'intégrale sur $[0, X]$, puis on fait tendre $X$ vers $+\\infty$ :" }, { t: "formula", tex: ["\\int_0^X e^{-x}\\, dx = \\left[ -e^{-x} \\right]_0^X = 1 - e^{-X}", "\\lim_{X \\to +\\infty} \\left( 1 - e^{-X} \\right) = 1"] }, { t: "p", v: "La limite est finie : l'intégrale converge et vaut 1." }] },
       ]},
     ],
     conseils: ["Apprendre les DL usuels par cœur : c'est non négociable.", "Pour une intégrale : équivalent en la borne + comparaison à Riemann.", "Vérifier l'ordre demandé et garder le o(xⁿ)."],
@@ -3277,48 +3314,28 @@ lim(X→+∞) (1 − e^(−X)) = 1   (finie)
     tags: ["matrices", "déterminants", "systèmes", "intégrales"],
     parts: [
       { title: "Exercice 1 — Système linéaire", items: [
-        { n: "1.1", pts: "2 pts", q: [{ t: "p", v: "Écrire sous forme matricielle AX = B le système : 2x + y = 3 ; x − y = 0." }],
+        { n: "1.1", pts: "2 pts", q: [{ t: "p", v: "Écrire sous forme matricielle $AX = B$ le système suivant :" }, { t: "formula", tex: "\\begin{cases} 2x + y = 3 \\\\ x - y = 0 \\end{cases}" }],
           indice: "A contient les coefficients.",
-          c: [{ t: "code", v: `A = | 2   1 |   X = | x |   B = | 3 |
-    | 1  −1 |       | y |       | 0 |` }] },
-        { n: "1.2", pts: "4 pts", q: [{ t: "p", v: "Montrer que A est inversible et résoudre par la méthode de l'inverse." }],
+          c: [{ t: "p", v: "On range les coefficients, les inconnues et les seconds membres :" }, { t: "formula", tex: "A = \\begin{pmatrix} 2 & 1 \\\\ 1 & -1 \\end{pmatrix} \\qquad X = \\begin{pmatrix} x \\\\ y \\end{pmatrix} \\qquad B = \\begin{pmatrix} 3 \\\\ 0 \\end{pmatrix}" }] },
+        { n: "1.2", pts: "4 pts", q: [{ t: "p", v: "Montrer que $A$ est inversible, puis résoudre le système par la méthode de l'inverse." }],
           indice: "det(A) = ad − bc ; inverse 2×2.",
-          c: [{ t: "code", v: `det(A) = 2·(−1) − 1·1 = −3 ≠ 0  → inversible.
-
-A⁻¹ = 1/(−3) · | −1  −1 | = 1/3 · | 1  1 |
-                | −1   2 |         | 1 −2 |
-
-X = A⁻¹B = 1/3 · | 1  1 | | 3 | = 1/3 · | 3 | = | 1 |
-                  | 1 −2 | | 0 |        | 3 |   | 1 |
-
-x = 1, y = 1.` }] },
+          c: [{ t: "p", v: "On calcule le déterminant :" }, { t: "formula", tex: "\\det(A) = 2 \\times (-1) - 1 \\times 1 = -3 \\neq 0" }, { t: "p", v: "Le déterminant est non nul, donc $A$ est inversible. On applique la formule de l'inverse d'une matrice $2 \\times 2$ :" }, { t: "formula", tex: "A^{-1} = \\frac{1}{-3} \\begin{pmatrix} -1 & -1 \\\\ -1 & 2 \\end{pmatrix} = \\frac{1}{3} \\begin{pmatrix} 1 & 1 \\\\ 1 & -2 \\end{pmatrix}" }, { t: "p", v: "On en déduit la solution :" }, { t: "formula", tex: "X = A^{-1} B = \\frac{1}{3} \\begin{pmatrix} 1 & 1 \\\\ 1 & -2 \\end{pmatrix} \\begin{pmatrix} 3 \\\\ 0 \\end{pmatrix} = \\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}" }, { t: "p", v: "On obtient $x = 1$ et $y = 1$." }] },
       ]},
       { title: "Exercice 2 — Déterminant", items: [
-        { n: "2.1", pts: "4 pts", q: [{ t: "p", v: "Calculer le déterminant de [[1,2,3],[0,1,4],[0,0,2]]." }],
+        { n: "2.1", pts: "4 pts", q: [{ t: "p", v: "Calculer le déterminant de la matrice suivante :" }, { t: "formula", tex: "\\begin{vmatrix} 1 & 2 & 3 \\\\ 0 & 1 & 4 \\\\ 0 & 0 & 2 \\end{vmatrix}" }],
           indice: "Matrice triangulaire.",
-          c: [{ t: "code", v: `La matrice est triangulaire supérieure :
-det = produit de la diagonale = 1 × 1 × 2 = 2.` }] },
-        { n: "2.2", pts: "3 pts", q: [{ t: "p", v: "Pour quelle(s) valeur(s) de m la matrice [[m,1],[2,m]] n'est-elle PAS inversible ?" }],
+          c: [{ t: "p", v: "La matrice est triangulaire supérieure : son déterminant est le produit des termes diagonaux." }, { t: "formula", tex: "\\det = 1 \\times 1 \\times 2 = 2" }] },
+        { n: "2.2", pts: "3 pts", q: [{ t: "p", v: "Pour quelle(s) valeur(s) de $m$ la matrice suivante n'est-elle pas inversible ?" }, { t: "formula", tex: "\\begin{pmatrix} m & 1 \\\\ 2 & m \\end{pmatrix}" }],
           indice: "Non inversible ⟺ det = 0.",
-          c: [{ t: "code", v: `det = m·m − 1·2 = m² − 2
-det = 0  ⟺  m² = 2  ⟺  m = ±√2
-
-Non inversible pour m = √2 ou m = −√2.` }] },
+          c: [{ t: "p", v: "La matrice n'est pas inversible lorsque son déterminant s'annule :" }, { t: "formula", tex: ["\\det = m \\times m - 1 \\times 2 = m^2 - 2", "\\det = 0 \\iff m^2 = 2 \\iff m = \\pm\\sqrt{2}"] }, { t: "p", v: "La matrice n'est pas inversible pour $m = \\sqrt{2}$ ou $m = -\\sqrt{2}$." }] },
       ]},
       { title: "Exercice 3 — Intégrale", items: [
-        { n: "3.1", pts: "4 pts", q: [{ t: "p", v: "Étudier la nature de ∫₀^1 dx/√x." }],
+        { n: "3.1", pts: "4 pts", q: [{ t: "p", v: "Étudier la nature de l'intégrale suivante :" }, { t: "formula", tex: "\\int_0^1 \\frac{dx}{\\sqrt{x}}" }],
           indice: "Riemann en 0 : β.",
-          c: [{ t: "code", v: `1/√x = 1/x^(1/2) : Riemann en 0 avec β = 1/2.
-β = 1/2 < 1  →  l'intégrale CONVERGE.
-
-(valeur : [2√x]₀^1 = 2)` }] },
-        { n: "3.2", pts: "3 pts", q: [{ t: "p", v: "Étudier la nature de ∫₁^{+∞} dx/√x." }],
+          c: [{ t: "p", v: "On reconnaît une intégrale de Riemann en 0 :" }, { t: "formula", tex: "\\frac{1}{\\sqrt{x}} = \\frac{1}{x^{1/2}} \\qquad \\beta = \\frac{1}{2}" }, { t: "p", v: "Comme $\\beta = \\frac{1}{2} < 1$, l'intégrale converge." }, { t: "formula", tex: "\\int_0^1 \\frac{dx}{\\sqrt{x}} = \\left[ 2\\sqrt{x} \\right]_0^1 = 2" }] },
+        { n: "3.2", pts: "3 pts", q: [{ t: "p", v: "Étudier la nature de l'intégrale suivante :" }, { t: "formula", tex: "\\int_1^{+\\infty} \\frac{dx}{\\sqrt{x}}" }],
           indice: "Riemann à l'infini : α.",
-          c: [{ t: "code", v: `1/√x : Riemann à l'infini avec α = 1/2.
-α = 1/2 < 1  →  l'intégrale DIVERGE.
-
-(même fonction qu'en 3.1 mais autre intervalle :
-le critère dépend de la borne problématique !)` }] },
+          c: [{ t: "p", v: "Cette fois, c'est une intégrale de Riemann en $+\\infty$ :" }, { t: "formula", tex: "\\frac{1}{\\sqrt{x}} = \\frac{1}{x^{1/2}} \\qquad \\alpha = \\frac{1}{2}" }, { t: "p", v: "Comme $\\alpha = \\frac{1}{2} < 1$, l'intégrale diverge." }, { t: "note", kind: "warn", v: "Même fonction qu'en 3.1, mais l'intervalle change : le critère de Riemann dépend de la borne problématique (β en 0, α à l'infini)." }] },
       ]},
     ],
     conseils: ["Pour un déterminant : repérer triangulaire / lignes nulles / proportionnelles avant de calculer.", "Inversibilité ⟺ déterminant non nul.", "Bien identifier QUELLE borne pose problème pour appliquer le bon critère."],
@@ -3332,36 +3349,28 @@ le critère dépend de la borne problématique !)` }] },
     tags: ["travail", "énergie", "TEC"],
     parts: [
       { title: "Exercice 1 — Cours", items: [
-        { n: "1.1", pts: "2 pts", q: [{ t: "p", v: "Énoncer le théorème de l'énergie cinétique. Donner l'expression de Ec." }],
+        { n: "1.1", pts: "2 pts", q: [{ t: "p", v: "Énoncer le théorème de l'énergie cinétique. Donner l'expression de l'énergie cinétique $E_c$." }],
           indice: "ΔEc = somme des travaux.",
-          c: [{ t: "p", v: "TEC : la variation d'énergie cinétique d'un point entre deux instants est égale à la somme des travaux des forces extérieures : ΔEc = Σ W. Avec Ec = ½mv²." }] },
+          c: [{ t: "p", v: "Théorème de l'énergie cinétique : la variation d'énergie cinétique d'un point entre deux instants est égale à la somme des travaux des forces extérieures." }, { t: "formula", tex: ["\\Delta E_c = \\sum W_{\\text{ext}}", "E_c = \\frac{1}{2} m v^2"] }] },
         { n: "1.2", pts: "2 pts", q: [{ t: "p", v: "Qu'est-ce qu'une force conservative ? Le poids l'est-il ? Et les frottements ?" }],
           indice: "Travail indépendant du chemin.",
           c: [{ t: "p", v: "Une force est conservative si son travail ne dépend que des points de départ et d'arrivée. Le poids est conservatif ; les frottements ne le sont pas (le travail dépend du trajet)." }] },
       ]},
       { title: "Exercice 2 — Chute sur un plan incliné", items: [
-        { n: "2.1", pts: "5 pts", q: [{ t: "p", v: "Un solide de masse m part du repos en haut d'un plan incliné lisse, dénivelé h. Déterminer sa vitesse en bas par le TEC." }],
+        { n: "2.1", pts: "5 pts", q: [{ t: "p", v: "Un solide de masse $m$ part du repos en haut d'un plan incliné lisse, de dénivelé $h$. Déterminer sa vitesse en bas par le théorème de l'énergie cinétique." }],
           indice: "Seul le poids travaille ; W(poids) = mgh.",
-          c: [{ t: "code", v: `TEC entre haut (v=0) et bas (v) :
-  ½mv² − 0 = W(poids) = mgh
-  ⟹  v = √(2gh)` }] },
-        { n: "2.2", pts: "4 pts", q: [{ t: "p", v: "On ajoute des frottements solides de force f constante sur une longueur L. Donner la nouvelle vitesse en bas." }],
+          c: [{ t: "p", v: "Seul le poids travaille. On applique le TEC entre le haut ($v = 0$) et le bas ($v$) :" }, { t: "formula", tex: ["\\frac{1}{2} m v^2 - 0 = W_{\\text{poids}} = mgh", "v = \\sqrt{2gh}"] }] },
+        { n: "2.2", pts: "4 pts", q: [{ t: "p", v: "On ajoute des frottements solides, de force $f$ constante, sur une longueur $L$. Donner la nouvelle vitesse en bas." }],
           indice: "Le travail des frottements est −f·L (résistant).",
-          c: [{ t: "code", v: `TEC :  ½mv² = W(poids) + W(frottements)
-       ½mv² = mgh − f·L
-  ⟹  v = √( 2(mgh − f·L)/m )` }] },
+          c: [{ t: "p", v: "Le travail des frottements est résistant : $W_{\\text{frott}} = -fL$. Le TEC donne :" }, { t: "formula", tex: ["\\frac{1}{2} m v^2 = W_{\\text{poids}} + W_{\\text{frott}} = mgh - fL", "v = \\sqrt{\\frac{2(mgh - fL)}{m}}"] }] },
       ]},
       { title: "Exercice 3 — Conservation de l'énergie", items: [
-        { n: "3.1", pts: "5 pts", q: [{ t: "p", v: "Une bille lâchée d'une hauteur h sur un rail sans frottement. Par conservation de l'énergie mécanique, donner sa vitesse au point bas." }],
+        { n: "3.1", pts: "5 pts", q: [{ t: "p", v: "Une bille est lâchée d'une hauteur $h$ sur un rail sans frottement. Par conservation de l'énergie mécanique, donner sa vitesse au point bas." }],
           indice: "Em conservée : Em(haut) = Em(bas).",
-          c: [{ t: "code", v: `Système conservatif : Em = constante.
-Haut : Em = mgh + 0
-Bas  : Em = 0 + ½mv²
-
-mgh = ½mv²  ⟹  v = √(2gh)` }] },
+          c: [{ t: "p", v: "Le système est conservatif : l'énergie mécanique $E_m$ se conserve." }, { t: "formula", tex: ["E_m^{\\text{haut}} = mgh \\qquad E_m^{\\text{bas}} = \\frac{1}{2} m v^2", "mgh = \\frac{1}{2} m v^2 \\;\\Rightarrow\\; v = \\sqrt{2gh}"] }] },
         { n: "3.2", pts: "2 pts", q: [{ t: "p", v: "Pourquoi obtient-on le même résultat qu'en 2.1 ?" }],
           indice: "Sans frottement, les deux méthodes sont équivalentes.",
-          c: [{ t: "p", v: "Sans frottement, le travail du poids correspond exactement à la variation d'énergie potentielle : TEC et conservation de Em donnent le même résultat. Ce sont deux façons d'écrire la même physique." }] },
+          c: [{ t: "p", v: "Sans frottement, le travail du poids correspond exactement à la variation d'énergie potentielle : le TEC et la conservation de $E_m$ donnent le même résultat. Ce sont deux façons d'écrire la même physique." }] },
       ]},
     ],
     conseils: ["Toujours vérifier l'homogénéité du résultat final.", "Bien identifier les forces qui travaillent (le poids oui, la réaction normale non).", "Mettre des flèches sur les vecteurs."],
@@ -3373,42 +3382,25 @@ mgh = ½mv²  ⟹  v = √(2gh)` }] },
     tags: ["oscillateur", "amortissement", "équation différentielle"],
     parts: [
       { title: "Exercice 1 — Mise en équation", items: [
-        { n: "1.1", pts: "5 pts", q: [{ t: "p", v: "Une masse m sur un ressort de raideur k subit un frottement fluide f⃗ = −λv⃗. Établir l'équation du mouvement à partir des forces." }],
+        { n: "1.1", pts: "5 pts", q: [{ t: "p", v: "Une masse $m$ sur un ressort de raideur $k$ subit un frottement fluide $\\vec{f} = -\\lambda \\vec{v}$. Établir l'équation du mouvement à partir des forces." }],
           indice: "Principe fondamental de la dynamique : m·a = Σ F.",
-          c: [{ t: "code", v: `PFD selon l'axe du mouvement :
-  m ẍ = −k x − λ ẋ
-
-  ⟹  m ẍ + λ ẋ + k x = 0
-  ⟹  ẍ + (λ/m) ẋ + (k/m) x = 0
-
-Forme canonique : ẍ + (ω₀/Q) ẋ + ω₀² x = 0
-avec ω₀ = √(k/m).` }] },
+          c: [{ t: "p", v: "PFD projeté sur l'axe du mouvement :" }, { t: "formula", tex: ["m\\ddot{x} = -kx - \\lambda\\dot{x}", "m\\ddot{x} + \\lambda\\dot{x} + kx = 0", "\\ddot{x} + \\frac{\\lambda}{m}\\dot{x} + \\frac{k}{m}x = 0"] }, { t: "p", v: "Sous forme canonique :" }, { t: "formula", tex: "\\ddot{x} + \\frac{\\omega_0}{Q}\\dot{x} + \\omega_0^2\\, x = 0 \\qquad \\omega_0 = \\sqrt{\\frac{k}{m}}" }] },
         { n: "1.2", pts: "3 pts", q: [{ t: "p", v: "Retrouver cette équation par une méthode énergétique." }],
           indice: "dEm/dt = puissance des frottements.",
-          c: [{ t: "code", v: `Em = ½ m ẋ² + ½ k x²
-dEm/dt = P(frottements) = −λ ẋ²
-
-m ẋ ẍ + k x ẋ = −λ ẋ²
-⟹ m ẍ + k x = −λ ẋ
-⟹ m ẍ + λ ẋ + k x = 0` }] },
+          c: [{ t: "p", v: "On dérive l'énergie mécanique : sa variation est égale à la puissance des frottements." }, { t: "formula", tex: ["E_m = \\frac{1}{2} m \\dot{x}^2 + \\frac{1}{2} k x^2", "\\frac{d E_m}{dt} = -\\lambda \\dot{x}^2", "m\\dot{x}\\ddot{x} + kx\\dot{x} = -\\lambda\\dot{x}^2", "m\\ddot{x} + \\lambda\\dot{x} + kx = 0"] }] },
       ]},
       { title: "Exercice 2 — Régimes", items: [
-        { n: "2.1", pts: "4 pts", q: [{ t: "p", v: "Citer les trois régimes possibles et leur condition sur Q. Lequel revient le plus vite à l'équilibre ?" }],
+        { n: "2.1", pts: "4 pts", q: [{ t: "p", v: "Citer les trois régimes possibles et leur condition sur le facteur de qualité $Q$. Lequel revient le plus vite à l'équilibre ?" }],
           indice: "Q vs 1/2.",
-          c: [{ t: "p", v: "Pseudo-périodique (Q > 1/2) : oscille en s'atténuant. Critique (Q = 1/2) : retour le PLUS RAPIDE sans osciller. Apériodique (Q < 1/2) : retour lent sans osciller. Le régime critique est le plus rapide." }] },
-        { n: "2.2", pts: "4 pts", q: [{ t: "p", v: "On observe une courbe θ(t) qui oscille en diminuant. Donner la forme de θ(t) et nommer la pseudo-période." }],
+          c: [{ t: "p", v: "Pseudo-périodique ($Q > \\frac{1}{2}$) : le système oscille en s'atténuant. Critique ($Q = \\frac{1}{2}$) : retour le plus rapide à l'équilibre, sans osciller. Apériodique ($Q < \\frac{1}{2}$) : retour lent, sans osciller. Le régime critique est le plus rapide." }] },
+        { n: "2.2", pts: "4 pts", q: [{ t: "p", v: "On observe une courbe $\\theta(t)$ qui oscille en diminuant. Donner la forme de $\\theta(t)$ et nommer la pseudo-période." }],
           indice: "Enveloppe exponentielle × cosinus.",
-          c: [{ t: "code", v: `Régime pseudo-périodique :
-  θ(t) = A·e^(−t/τ)·cos(ω t + φ)
-
-ω : pseudo-pulsation (ω < ω₀)
-T = 2π/ω : pseudo-période
-e^(−t/τ) : enveloppe décroissante` }] },
+          c: [{ t: "p", v: "C'est le régime pseudo-périodique :" }, { t: "formula", tex: "\\theta(t) = A\\, e^{-t/\\tau} \\cos(\\omega t + \\varphi)" }, { t: "p", v: "où $\\omega$ est la pseudo-pulsation (avec $\\omega < \\omega_0$), $T = \\frac{2\\pi}{\\omega}$ la pseudo-période, et $e^{-t/\\tau}$ l'enveloppe décroissante." }] },
       ]},
       { title: "Exercice 3 — Énergie", items: [
         { n: "3.1", pts: "4 pts", q: [{ t: "p", v: "L'énergie mécanique d'un oscillateur amorti est-elle conservée ? Justifier." }],
           indice: "TEM : ΔEm = W(forces non conservatives).",
-          c: [{ t: "p", v: "Non. Le frottement fluide est une force non conservative : ΔEm = W(frottements) < 0. L'énergie mécanique décroît, elle est dissipée sous forme de chaleur. C'est ce qui amortit les oscillations." }] },
+          c: [{ t: "p", v: "Non. Le frottement fluide est une force non conservative, donc $\\Delta E_m = W_{\\text{frott}} < 0$. L'énergie mécanique décroît : elle est dissipée sous forme de chaleur. C'est ce qui amortit les oscillations." }] },
       ]},
     ],
     conseils: ["Maîtriser les deux méthodes de mise en équation (forces et énergie).", "La forme canonique fait apparaître ω₀ et Q directement.", "Reconnaître le régime à l'allure de la courbe."],
@@ -3425,31 +3417,25 @@ e^(−t/τ) : enveloppe décroissante` }] },
         { n: "1.1", pts: "2 pts", q: [{ t: "p", v: "Énoncer la loi des nœuds et la loi des mailles." }],
           indice: "Charges / tensions.",
           c: [{ t: "p", v: "Loi des nœuds : la somme des courants entrant dans un nœud égale la somme des courants sortants. Loi des mailles : la somme algébrique des tensions le long d'une maille fermée est nulle." }] },
-        { n: "1.2", pts: "3 pts", q: [{ t: "p", v: "Calculer la résistance équivalente de R₁ = 100 Ω et R₂ = 100 Ω en série, puis en parallèle." }],
+        { n: "1.2", pts: "3 pts", q: [{ t: "p", v: "Calculer la résistance équivalente de $R_1 = 100\\,\\Omega$ et $R_2 = 100\\,\\Omega$ en série, puis en parallèle." }],
           indice: "Série : addition. Parallèle : produit/somme.",
-          c: [{ t: "code", v: `Série :     R = R₁ + R₂ = 200 Ω
-Parallèle : R = R₁R₂/(R₁+R₂) = 10000/200 = 50 Ω` }] },
+          c: [{ t: "p", v: "En série les résistances s'additionnent ; en parallèle on applique la formule produit sur somme :" }, { t: "formula", tex: ["\\text{Série :}\\quad R = R_1 + R_2 = 200\\,\\Omega", "\\text{Parallèle :}\\quad R = \\frac{R_1 R_2}{R_1 + R_2} = \\frac{10000}{200} = 50\\,\\Omega"] }] },
       ]},
       { title: "Exercice 2 — Pont diviseur", items: [
-        { n: "2.1", pts: "4 pts", q: [{ t: "p", v: "R₁ = 2 kΩ et R₂ = 6 kΩ en série sous U = 16 V. Calculer la tension aux bornes de R₂ (sortie à vide)." }],
+        { n: "2.1", pts: "4 pts", q: [{ t: "p", v: "$R_1 = 2\\,\\text{k}\\Omega$ et $R_2 = 6\\,\\text{k}\\Omega$ sont en série sous une tension $U = 16\\,\\text{V}$. Calculer la tension aux bornes de $R_2$ (sortie à vide)." }],
           indice: "Formule du diviseur de tension.",
-          c: [{ t: "code", v: `U₂ = U · R₂/(R₁+R₂)
-   = 16 · 6/(2+6) = 16 · 6/8 = 12 V` }] },
+          c: [{ t: "p", v: "On applique la formule du diviseur de tension :" }, { t: "formula", tex: ["U_2 = U \\cdot \\frac{R_2}{R_1 + R_2}", "U_2 = 16 \\cdot \\frac{6}{2 + 6} = 16 \\cdot \\frac{6}{8} = 12\\,\\text{V}"] }] },
         { n: "2.2", pts: "3 pts", q: [{ t: "p", v: "À quelle condition la formule du diviseur reste-t-elle valable ?" }],
           indice: "Courant au point milieu.",
           c: [{ t: "p", v: "La formule n'est valable que si aucun courant n'est tiré au point milieu : la sortie doit être « à vide », ou la charge branchée doit avoir une résistance très grande devant R₂." }] },
       ]},
       { title: "Exercice 3 — Circuit", items: [
-        { n: "3.1", pts: "5 pts", q: [{ t: "p", v: "Un générateur U = 12 V alimente R₁ = 4 Ω et R₂ = 8 Ω en série. Calculer le courant I du circuit et la puissance dissipée par R₂." }],
+        { n: "3.1", pts: "5 pts", q: [{ t: "p", v: "Un générateur de tension $U = 12\\,\\text{V}$ alimente $R_1 = 4\\,\\Omega$ et $R_2 = 8\\,\\Omega$ en série. Calculer le courant $I$ du circuit et la puissance dissipée par $R_2$." }],
           indice: "I = U/R_eq, puis P = R·I².",
-          c: [{ t: "code", v: `R_eq = R₁ + R₂ = 12 Ω
-I = U/R_eq = 12/12 = 1 A
-
-P(R₂) = R₂·I² = 8 × 1² = 8 W` }] },
+          c: [{ t: "p", v: "On calcule la résistance équivalente, le courant, puis la puissance :" }, { t: "formula", tex: ["R_{eq} = R_1 + R_2 = 12\\,\\Omega", "I = \\frac{U}{R_{eq}} = \\frac{12}{12} = 1\\,\\text{A}", "P_{R_2} = R_2 \\cdot I^2 = 8 \\times 1^2 = 8\\,\\text{W}"] }] },
         { n: "3.2", pts: "3 pts", q: [{ t: "p", v: "Vérifier le résultat avec la loi des mailles." }],
           indice: "U = R₁I + R₂I.",
-          c: [{ t: "code", v: `Loi des mailles : U = U₁ + U₂ = R₁I + R₂I
-12 = 4·1 + 8·1 = 12 V  ✓  cohérent.` }] },
+          c: [{ t: "p", v: "La loi des mailles donne :" }, { t: "formula", tex: ["U = U_1 + U_2 = R_1 I + R_2 I", "12 = 4 \\cdot 1 + 8 \\cdot 1 = 12\\,\\text{V}"] }, { t: "p", v: "Le résultat est cohérent." }] },
       ]},
     ],
     conseils: ["Toujours préciser les unités et l'orientation des courants.", "Le diviseur de tension fait gagner beaucoup de temps.", "Vérifier avec la loi des mailles."],
@@ -3463,33 +3449,23 @@ P(R₂) = R₂·I² = 8 × 1² = 8 W` }] },
       { title: "Exercice 1 — Filtre RC", items: [
         { n: "1.1", pts: "3 pts", q: [{ t: "p", v: "Donner la fonction de transfert d'un filtre RC passe-bas et sa pulsation de coupure." }],
           indice: "Diviseur de tension avec Z_C.",
-          c: [{ t: "code", v: `H(jω) = Z_C/(R + Z_C) = 1/(1 + jRCω)
-Pulsation de coupure : ω_c = 1/(RC)` }] },
-        { n: "1.2", pts: "4 pts", q: [{ t: "p", v: "Pour R = 1 kΩ et C = 1 µF, calculer ω_c et f_c. Que vaut le gain en dB à la coupure ?" }],
+          c: [{ t: "p", v: "Avec un diviseur de tension en complexe :" }, { t: "formula", tex: "H(j\\omega) = \\frac{Z_C}{R + Z_C} = \\frac{1}{1 + jRC\\omega}" }, { t: "p", v: "Pulsation de coupure :" }, { t: "formula", tex: "\\omega_c = \\frac{1}{RC}" }] },
+        { n: "1.2", pts: "4 pts", q: [{ t: "p", v: "Pour $R = 1\\,\\text{k}\\Omega$ et $C = 1\\,\\mu\\text{F}$, calculer $\\omega_c$ et $f_c$. Que vaut le gain en dB à la coupure ?" }],
           indice: "ω_c = 1/(RC) ; G_dB = 20log|H|.",
-          c: [{ t: "code", v: `ω_c = 1/(RC) = 1/(10³ × 10⁻⁶) = 1000 rad/s
-f_c = ω_c/(2π) ≈ 159 Hz
-
-À ω_c : |H| = 1/√2  →  G_dB = 20·log(1/√2) ≈ −3 dB` }] },
+          c: [{ t: "p", v: "On calcule la pulsation puis la fréquence de coupure :" }, { t: "formula", tex: ["\\omega_c = \\frac{1}{RC} = \\frac{1}{10^3 \\times 10^{-6}} = 1000\\,\\text{rad/s}", "f_c = \\frac{\\omega_c}{2\\pi} \\approx 159\\,\\text{Hz}"] }, { t: "p", v: "À la pulsation de coupure :" }, { t: "formula", tex: "|H| = \\frac{1}{\\sqrt{2}} \\;\\Rightarrow\\; G_{dB} = 20 \\log \\frac{1}{\\sqrt{2}} \\approx -3\\,\\text{dB}" }] },
       ]},
       { title: "Exercice 2 — Lecture de Bode", items: [
-        { n: "2.1", pts: "4 pts", q: [{ t: "p", v: "Un diagramme de Bode montre un gain constant à 0 dB puis une chute à −20 dB/décade après 2 kHz. Identifier le filtre et son ordre." }],
+        { n: "2.1", pts: "4 pts", q: [{ t: "p", v: "Un diagramme de Bode montre un gain constant à 0 dB, puis une chute à −20 dB/décade après 2 kHz. Identifier le filtre et son ordre." }],
           indice: "Plat puis chute = ?",
-          c: [{ t: "p", v: "Gain plat (0 dB) en basses fréquences puis chute : c'est un filtre PASSE-BAS. La pente de −20 dB/décade indique un filtre d'ORDRE 1. La fréquence de coupure est 2 kHz." }] },
+          c: [{ t: "p", v: "Gain plat (0 dB) en basses fréquences puis chute : c'est un filtre passe-bas. La pente de −20 dB/décade indique un filtre d'ordre 1. La fréquence de coupure est 2 kHz." }] },
       ]},
       { title: "Exercice 3 — AOP", items: [
         { n: "3.1", pts: "3 pts", q: [{ t: "p", v: "Rappeler les hypothèses de l'AOP idéal en régime linéaire." }],
           indice: "Courants d'entrée + tensions d'entrée.",
-          c: [{ t: "p", v: "AOP idéal : courants d'entrée nuls (i⁺ = i⁻ = 0) ; en régime linéaire (contre-réaction sur l'entrée −), les tensions d'entrée sont égales : V⁺ = V⁻." }] },
-        { n: "3.2", pts: "6 pts", q: [{ t: "p", v: "Montage non inverseur : Ve sur l'entrée +, pont R₁ (vers masse) et R₂ (vers Vs) sur l'entrée −. Établir Vs en fonction de Ve, R₁ et R₂." }],
+          c: [{ t: "p", v: "AOP idéal : les courants d'entrée sont nuls ($i^+ = i^- = 0$) ; en régime linéaire (contre-réaction sur l'entrée −), les tensions d'entrée sont égales : $V^+ = V^-$." }] },
+        { n: "3.2", pts: "6 pts", q: [{ t: "p", v: "Montage non inverseur : $V_e$ est appliquée sur l'entrée +, un pont $R_1$ (vers la masse) et $R_2$ (vers $V_s$) est branché sur l'entrée −. Établir $V_s$ en fonction de $V_e$, $R_1$ et $R_2$." }],
           indice: "V⁻ = diviseur de tension de Vs ; V⁺ = Ve ; V⁺ = V⁻.",
-          c: [{ t: "code", v: `i⁻ = 0 → R₁ et R₂ forment un diviseur :
-  V⁻ = Vs · R₁/(R₁+R₂)
-
-Régime linéaire : V⁺ = V⁻
-  Ve = Vs · R₁/(R₁+R₂)
-
-⟹  Vs = Ve · (R₁+R₂)/R₁ = (1 + R₂/R₁)·Ve` }] },
+          c: [{ t: "p", v: "Comme $i^- = 0$, les résistances $R_1$ et $R_2$ forment un diviseur de tension :" }, { t: "formula", tex: "V^- = V_s \\cdot \\frac{R_1}{R_1 + R_2}" }, { t: "p", v: "En régime linéaire $V^+ = V^-$, et $V^+ = V_e$, d'où :" }, { t: "formula", tex: ["V_e = V_s \\cdot \\frac{R_1}{R_1 + R_2}", "V_s = V_e \\cdot \\frac{R_1 + R_2}{R_1} = \\left( 1 + \\frac{R_2}{R_1} \\right) V_e"] }] },
       ]},
     ],
     conseils: ["Le filtre passe-bas se retrouve avec un simple diviseur de tension en complexe.", "Vérifier la contre-réaction sur l'entrée − avant d'écrire V⁺ = V⁻.", "i⁺ = i⁻ = 0 permet d'appliquer le diviseur de tension autour de l'AOP."],
@@ -3758,14 +3734,12 @@ if (v == NULL) { printf("Aucune voiture\\n"); continue; }` }] },
     },
     parts: [
       { title: "Exercice 1 — Système linéaire (6 pts)", items: [
-        { n: "1.1", pts: "1 pt", q: [{ t: "p", v: "Écrire sous forme matricielle AX = B le système : x + 3y + 2z = 2 ; 2x + 7y + 7z = −1 ; 2x + 5y + 2z = 7." }],
+        { n: "1.1", pts: "1 pt", q: [{ t: "p", v: "Écrire sous forme matricielle $AX = B$ le système suivant :" }, { t: "formula", tex: "\\begin{cases} x + 3y + 2z = 2 \\\\ 2x + 7y + 7z = -1 \\\\ 2x + 5y + 2z = 7 \\end{cases}" }],
           indice: "A = coefficients, X = inconnues, B = seconds membres.",
-          c: [{ t: "code", v: `      | 1 3 2 |        | x |        |  2 |
-  A = | 2 7 7 |   X =  | y |   B =  | −1 |
-      | 2 5 2 |        | z |        |  7 |` }] },
-        { n: "1.2", pts: "3 pts", q: [{ t: "p", v: "Montrer que A est inversible (det A ≠ 0) puis indiquer comment résoudre par la méthode de l'inverse." }],
+          c: [{ t: "p", v: "On range les coefficients dans $A$, les inconnues dans $X$ et les seconds membres dans $B$ :" }, { t: "formula", tex: "A = \\begin{pmatrix} 1 & 3 & 2 \\\\ 2 & 7 & 7 \\\\ 2 & 5 & 2 \\end{pmatrix} \\qquad X = \\begin{pmatrix} x \\\\ y \\\\ z \\end{pmatrix} \\qquad B = \\begin{pmatrix} 2 \\\\ -1 \\\\ 7 \\end{pmatrix}" }] },
+        { n: "1.2", pts: "3 pts", q: [{ t: "p", v: "Montrer que $A$ est inversible ($\\det A \\neq 0$), puis indiquer comment résoudre le système par la méthode de l'inverse." }],
           indice: "Développer le déterminant selon une ligne ; si det ≠ 0, X = A⁻¹B.",
-          c: [{ t: "p", v: "On calcule det(A) par développement. det(A) ≠ 0 donc A est inversible. La solution s'obtient alors par X = A⁻¹ B (il faut calculer A⁻¹ par la méthode de Gauss-Jordan sur (A | I))." }] },
+          c: [{ t: "p", v: "On calcule $\\det(A)$ par développement selon une ligne. Comme $\\det(A) \\neq 0$, la matrice $A$ est inversible. La solution s'obtient alors par $X = A^{-1} B$, où $A^{-1}$ se calcule par la méthode de Gauss-Jordan appliquée à la matrice augmentée $(A \\,|\\, I)$." }] },
         { n: "1.3", pts: "2 pts", q: [{ t: "p", v: "Décrire la résolution par la méthode de Gauss." }],
           indice: "Échelonner la matrice augmentée (A | B), puis remonter.",
           c: [{ t: "list", v: [
@@ -3776,7 +3750,7 @@ if (v == NULL) { printf("Aucune voiture\\n"); continue; }` }] },
           ]}] },
       ]},
       { title: "Exercice 2 — Intégrales généralisées (6 pts)", items: [
-        { n: "2.1", pts: "3 pts", q: [{ t: "p", v: "Calculer, si elle existe, l'intégrale ∫₀² x/√(4−x²) dx." }],
+        { n: "2.1", pts: "3 pts", q: [{ t: "p", v: "Calculer, si elle existe, l'intégrale suivante :" }, { t: "formula", tex: "\\int_0^2 \\frac{x}{\\sqrt{4 - x^2}}\\, dx" }],
           indice: "La borne 2 est problématique. Primitive : −√(4−x²).",
           c: [{ t: "code", v: `Une primitive de x/√(4−x²) est −√(4−x²).
 
@@ -3786,7 +3760,7 @@ if (v == NULL) { printf("Aucune voiture\\n"); continue; }` }] },
 lim(X→2⁻) ( −√(4−X²) + 2 ) = 2   (finie)
 
 ⟹ l'intégrale converge et vaut 2.` }] },
-        { n: "2.2", pts: "3 pts", q: [{ t: "p", v: "Étudier la nature de ∫₁^{+∞} dx/(x·√x)." }],
+        { n: "2.2", pts: "3 pts", q: [{ t: "p", v: "Étudier la nature (convergence ou divergence) de l'intégrale :" }, { t: "formula", tex: "\\int_1^{+\\infty} \\frac{dx}{x\\sqrt{x}}" }],
           indice: "x·√x = x^(3/2) : intégrale de Riemann.",
           c: [{ t: "code", v: `1/(x·√x) = 1/x^(3/2)
 
@@ -3822,51 +3796,32 @@ avec α = 3/2 > 1.
       { title: "Exercice 1 — Cours", items: [
         { n: "1.1", pts: "1,5 pt", q: [{ t: "p", v: "Donner la forme mathématique du théorème de l'énergie cinétique (TEC)." }],
           indice: "Variation d'énergie cinétique et travaux.",
-          c: [{ t: "code", v: `TEC :  ΔEc = Ec(B) − Ec(A) = Σ W(forces)
-
-avec  Ec = ½ m v²` }] },
+          c: [{ t: "p", v: "Théorème de l'énergie cinétique :" }, { t: "formula", tex: ["\\Delta E_c = E_c(B) - E_c(A) = \\sum W_{\\text{forces}}", "E_c = \\frac{1}{2} m v^2"] }] },
         { n: "1.2", pts: "1,5 pt", q: [{ t: "p", v: "Donner la relation de la constante de raideur équivalente pour deux ressorts en série." }],
           indice: "En série, ce sont les inverses qui s'additionnent.",
-          c: [{ t: "code", v: `Deux ressorts en série :
-
-   1/k_eq = 1/k₁ + 1/k₂
-
-(en parallèle ce serait k_eq = k₁ + k₂)` }] },
+          c: [{ t: "p", v: "Pour deux ressorts en série, ce sont les inverses des raideurs qui s'additionnent :" }, { t: "formula", tex: "\\frac{1}{k_{eq}} = \\frac{1}{k_1} + \\frac{1}{k_2}" }, { t: "p", v: "(en parallèle, on aurait au contraire $k_{eq} = k_1 + k_2$)." }] },
       ]},
       { title: "Exercice 2 — Pendule amorti", items: [
-        { n: "2.1", pts: "2 pts", q: [{ t: "p", v: "Pendule d'angle θ(t) avec frottement f⃗ = −λv⃗. Donner l'expression de l'énergie cinétique et de l'énergie potentielle (petits angles)." }],
+        { n: "2.1", pts: "2 pts", q: [{ t: "p", v: "Un pendule d'angle $\\theta(t)$ subit un frottement $\\vec{f} = -\\lambda \\vec{v}$. Donner l'expression de l'énergie cinétique et de l'énergie potentielle (petits angles)." }],
           indice: "Ec dépend de θ̇ ; Ep de pesanteur pour un pendule, en petits angles ∝ θ².",
-          c: [{ t: "code", v: `Énergie cinétique :   Ec = ½ m L² θ̇²
-Énergie potentielle : Ep = ½ m g L θ²
-   (approximation des petits angles)` }] },
+          c: [{ t: "p", v: "Dans l'approximation des petits angles :" }, { t: "formula", tex: ["E_c = \\frac{1}{2} m L^2 \\dot{\\theta}^2", "E_p = \\frac{1}{2} m g L\\, \\theta^2"] }] },
         { n: "2.2", pts: "3 pts", q: [{ t: "p", v: "Par une méthode énergétique, déterminer l'équation différentielle du mouvement dans l'approximation des petits angles." }],
           indice: "dEm/dt = puissance des frottements = −λ(Lθ̇)².",
-          c: [{ t: "code", v: `Em = Ec + Ep = ½ m L² θ̇² + ½ m g L θ²
-dEm/dt = P(frottements)
-
-m L² θ̇ θ̈ + m g L θ θ̇ = −λ L² θ̇²
-
-En simplifiant par θ̇ :
-   m L² θ̈ + λ L² θ̇ + m g L θ = 0
-   ⟹  θ̈ + (λ/m) θ̇ + (g/L) θ = 0` }] },
-        { n: "2.3", pts: "2 pts", q: [{ t: "p", v: "Donner l'expression du temps caractéristique τ et son interprétation physique." }],
+          c: [{ t: "p", v: "On écrit l'énergie mécanique :" }, { t: "formula", tex: "E_m = E_c + E_p = \\frac{1}{2} m L^2 \\dot{\\theta}^2 + \\frac{1}{2} m g L\\, \\theta^2" }, { t: "p", v: "On la dérive et on l'identifie à la puissance des frottements :" }, { t: "formula", tex: ["m L^2 \\dot{\\theta}\\ddot{\\theta} + m g L\\, \\theta\\dot{\\theta} = -\\lambda L^2 \\dot{\\theta}^2", "m L^2 \\ddot{\\theta} + \\lambda L^2 \\dot{\\theta} + m g L\\, \\theta = 0", "\\ddot{\\theta} + \\frac{\\lambda}{m}\\dot{\\theta} + \\frac{g}{L}\\theta = 0"] }] },
+        { n: "2.3", pts: "2 pts", q: [{ t: "p", v: "Donner l'expression du temps caractéristique $\\tau$ et son interprétation physique." }],
           indice: "τ apparaît dans le terme d'amortissement (coefficient de θ̇).",
-          c: [{ t: "p", v: "Le terme d'amortissement est (λ/m)θ̇ ; on pose τ = m/λ. τ est le temps caractéristique d'amortissement : il mesure la durée au bout de laquelle l'amplitude des oscillations a notablement décru (enveloppe en e^(−t/τ))." }] },
-        { n: "2.4", pts: "3 pts", q: [{ t: "p", v: "À quelle condition sur le facteur de qualité a-t-on un régime pseudo-périodique ? Donner alors la forme de θ(t) et la pseudo-période." }],
+          c: [{ t: "p", v: "Le terme d'amortissement est $\\frac{\\lambda}{m}\\dot{\\theta}$ ; on pose $\\tau = \\frac{m}{\\lambda}$. C'est le temps caractéristique d'amortissement : il mesure la durée au bout de laquelle l'amplitude des oscillations a notablement décru (enveloppe en $e^{-t/\\tau}$)." }] },
+        { n: "2.4", pts: "3 pts", q: [{ t: "p", v: "À quelle condition sur le facteur de qualité a-t-on un régime pseudo-périodique ? Donner alors la forme de $\\theta(t)$ et la pseudo-période." }],
           indice: "Pseudo-périodique : Q > 1/2.",
-          c: [{ t: "code", v: `Régime pseudo-périodique  ⟺  Q > 1/2
-
-θ(t) = A·e^(−t/τ)·cos(ω t + φ)
-
-Pseudo-période :  T = 2π/ω,  avec ω < ω₀` }] },
+          c: [{ t: "p", v: "Le régime est pseudo-périodique lorsque :" }, { t: "formula", tex: "Q > \\frac{1}{2}" }, { t: "p", v: "L'angle s'écrit alors :" }, { t: "formula", tex: "\\theta(t) = A\\, e^{-t/\\tau} \\cos(\\omega t + \\varphi)" }, { t: "p", v: "avec une pseudo-période $T = \\frac{2\\pi}{\\omega}$ et $\\omega < \\omega_0$." }] },
       ]},
       { title: "Exercice 3 — Lecture de courbe", items: [
-        { n: "3.1", pts: "2,5 pts", q: [{ t: "p", v: "La courbe θ(t) oscille en diminuant d'amplitude. Confirmer le régime et expliquer ce que devient l'énergie mécanique." }],
+        { n: "3.1", pts: "2,5 pts", q: [{ t: "p", v: "La courbe $\\theta(t)$ oscille en diminuant d'amplitude. Confirmer le régime et expliquer ce que devient l'énergie mécanique." }],
           indice: "Oscillation + atténuation + force non conservative.",
-          c: [{ t: "p", v: "La courbe oscille en s'atténuant : c'est bien le régime pseudo-périodique. L'énergie mécanique n'est pas conservée : la force de frottement est non conservative, ΔEm = W(frottements) < 0. L'énergie est dissipée sous forme de chaleur, ce qui explique la décroissance de l'amplitude." }] },
+          c: [{ t: "p", v: "La courbe oscille en s'atténuant : c'est bien le régime pseudo-périodique. L'énergie mécanique n'est pas conservée — la force de frottement est non conservative, donc $\\Delta E_m = W_{\\text{frott}} < 0$. L'énergie est dissipée sous forme de chaleur, ce qui explique la décroissance de l'amplitude." }] },
         { n: "3.2", pts: "1 pt", q: [{ t: "p", v: "Comment lirait-on la pseudo-période sur la courbe ?" }],
           indice: "Distance entre deux passages identiques.",
-          c: [{ t: "p", v: "La pseudo-période T se lit comme la durée entre deux maxima successifs (ou deux passages par zéro dans le même sens) de la courbe θ(t)." }] },
+          c: [{ t: "p", v: "La pseudo-période $T$ se lit comme la durée entre deux maxima successifs (ou deux passages par zéro dans le même sens) de la courbe $\\theta(t)$." }] },
       ]},
     ],
     conseils: [
@@ -3894,109 +3849,85 @@ Pseudo-période :  T = 2π/ω,  avec ω < ω₀` }] },
     parts: [
       { title: "Exercice 1 — Théorèmes Thévenin/Norton, sources indépendantes (6 pts)", items: [
         { n: "1.1", pts: "2 pts", q: [
-            { t: "p", v: "Circuit : un générateur 3 V, des résistances 6 Ω, 5 Ω et 2 Ω, une source de courant 1 A, et une charge Rc = 3 Ω entre A et B. Déterminer Rth et Eth du générateur de Thévenin à gauche de A et B (méthode imposée : Thévenin)." },
+            { t: "p", v: "Circuit : un générateur $3\\,\\text{V}$, des résistances $6\\,\\Omega$, $5\\,\\Omega$ et $2\\,\\Omega$, une source de courant $1\\,\\text{A}$, et une charge $R_c = 3\\,\\Omega$ entre A et B. Déterminer $R_{th}$ et $E_{th}$ du générateur de Thévenin à gauche de A et B (méthode imposée : Thévenin)." },
           ],
           indice: "Rth : on éteint les sources indépendantes (le 3 V devient un court-circuit, le 1 A un circuit ouvert). Eth : c'est la tension à vide UAB, charge Rc retirée.",
           c: [
             { t: "schema", name: "thevenin", legend: "Le générateur de Thévenin équivalent : Eth en série avec Rth, vu des bornes A et B." },
-            { t: "code", v: `Rth — on éteint les sources indépendantes :
-  3 V  ->  court-circuit
-  1 A  ->  circuit ouvert
-On calcule la résistance vue entre A et B.
-  => Rth = 2 Ohm
-
-Eth — tension à vide UAB (Rc retirée), sources actives :
-La résistance de 2 Ohm est traversée par le courant 1 A.
-  Eth = -2 x 1 = -2 V   (loi d'Ohm)` },
+            { t: "p", v: "Calcul de $R_{th}$ — on éteint les sources indépendantes : le générateur $3\\,\\text{V}$ devient un court-circuit, la source $1\\,\\text{A}$ un circuit ouvert. On calcule la résistance vue entre A et B :" },
+            { t: "formula", tex: "R_{th} = 2\\,\\Omega" },
+            { t: "p", v: "Calcul de $E_{th}$ — c'est la tension à vide $U_{AB}$ ($R_c$ retirée, sources actives). La résistance de $2\\,\\Omega$ est traversée par le courant $1\\,\\text{A}$, d'où par la loi d'Ohm :" },
+            { t: "formula", tex: "E_{th} = -2 \\times 1 = -2\\,\\text{V}" },
             { t: "p", v: "Résultats du DS : Rth = 2 Ω et Eth = -2 V (bien dans les fourchettes 1,8-2,0 Ω et -2,0 à -1,8 V)." },
           ] },
         { n: "1.2", pts: "2 pts", q: [
-            { t: "p", v: "Déterminer Rn et In du générateur de Norton (méthode imposée : Norton). In est orienté de A vers B." },
+            { t: "p", v: "Déterminer $R_n$ et $I_n$ du générateur de Norton (méthode imposée : Norton). $I_n$ est orienté de A vers B." },
           ],
           indice: "In est le courant de court-circuit entre A et B. Rn = Rth.",
           c: [
             { t: "schema", name: "norton", legend: "Le générateur de Norton équivalent : In en parallèle avec Rn (Rn = Rth)." },
-            { t: "code", v: `In — on court-circuite A et B, toutes sources actives.
-La résistance de 2 Ohm se retrouve court-circuitée : on la retire.
-Le schéma donne directement :
-  => In = -1 A   (orienté de A vers B)
-
-Rn — par définition Rn = Rth :
-  => Rn = 2 Ohm` },
+            { t: "p", v: "Calcul de $I_n$ — on court-circuite A et B, toutes sources actives. La résistance de $2\\,\\Omega$ se retrouve court-circuitée : on la retire. Le schéma donne directement :" },
+            { t: "formula", tex: "I_n = -1\\,\\text{A} \\quad (\\text{orienté de A vers B})" },
+            { t: "p", v: "Par définition, $R_n = R_{th}$ :" },
+            { t: "formula", tex: "R_n = 2\\,\\Omega" },
             { t: "p", v: "Résultats du DS : In = -1 A et Rn = 2 Ω." },
           ] },
         { n: "1.3", pts: "2 pts", q: [
-            { t: "p", v: "En déduire l'intensité io traversant la charge Rc = 3 Ω." },
+            { t: "p", v: "En déduire l'intensité $i_o$ traversant la charge $R_c = 3\\,\\Omega$." },
           ],
           indice: "Avec le modèle de Norton (In // Rn) et la charge Rc, c'est un diviseur de courant.",
           c: [
-            { t: "formula", tex: "i_o = \\frac{R_n}{R_n + R_c} \\cdot I_n", note: "Diviseur de courant entre Rn et la charge Rc." },
-            { t: "code", v: `io = Rn / (Rn + Rc) x In
-io = 2 / (2 + 3) x (-1)
-io = -2/5 = -0,4 A` },
+            { t: "p", v: "Avec le modèle de Norton ($I_n$ en parallèle avec $R_n$) et la charge $R_c$, on applique le diviseur de courant :" },
+            { t: "formula", tex: ["i_o = \\frac{R_n}{R_n + R_c} \\cdot I_n", "i_o = \\frac{2}{2 + 3} \\cdot (-1) = -\\frac{2}{5} = -0,4\\,\\text{A}"] },
             { t: "p", v: "Résultat du DS : io = -0,4 A (dans la fourchette -0,6 à -0,3 A)." },
           ] },
       ]},
       { title: "Exercice 2 — Théorème de Thévenin, sources liées (4 pts)", items: [
         { n: "2", pts: "4 pts", q: [
-            { t: "p", v: "Circuit avec une source de courant indépendante Io = 2 A, des résistances 5 Ω et 3 Ω, et une source de tension LIÉE de valeur Io (en volts). Charge Rc = 10 Ω entre A et B. Déterminer Rth et Eth du générateur de Thévenin à gauche de A et B." },
+            { t: "p", v: "Circuit avec une source de courant indépendante $I_o = 2\\,\\text{A}$, des résistances $5\\,\\Omega$ et $3\\,\\Omega$, et une source de tension LIÉE de valeur $i_o$ (en volts). Charge $R_c = 10\\,\\Omega$ entre A et B. Déterminer $R_{th}$ et $E_{th}$ du générateur de Thévenin à gauche de A et B." },
           ],
           indice: "Avec une source liée, on ne l'éteint PAS. Pour Rth : on éteint seulement les sources indépendantes et on injecte un générateur de test (tension V, courant I) → Rth = V/I.",
           c: [
-            { t: "code", v: `Rth — on éteint la source indépendante (le 2 A devient
-un circuit ouvert) et on branche un générateur de test 1 V.
-La source liée vaut U = io ; or ici io = 0, donc U = 0 V :
-on la remplace par un fil.
-Le générateur de test ne voit plus qu'une résistance de 3 Ohm :
-  I = 1/3 A   =>   Rth = V/I = 1 / (1/3) = 3 Ohm
-
-Eth — tension à vide UAB, toutes les sources actives.
-La résistance de 3 Ohm côté A n'est reliée à rien (charge
-retirée) : aucun courant ne la traverse, on la retire.
-La source liée vaut alors U = io = 2 V, d'où directement :
-  => Eth = 2 V` },
+            { t: "p", v: "Calcul de $R_{th}$ — on éteint la source indépendante (le $2\\,\\text{A}$ devient un circuit ouvert) et on branche un générateur de test $1\\,\\text{V}$. La source liée vaut $U = i_o$ ; or ici $i_o = 0$, donc $U = 0$ : on la remplace par un fil. Le générateur de test ne voit plus qu'une résistance de $3\\,\\Omega$ :" },
+            { t: "formula", tex: "I = \\frac{1}{3}\\,\\text{A} \\;\\Rightarrow\\; R_{th} = \\frac{V}{I} = \\frac{1}{1/3} = 3\\,\\Omega" },
+            { t: "p", v: "Calcul de $E_{th}$ — tension à vide $U_{AB}$, toutes les sources actives. La résistance de $3\\,\\Omega$ côté A n'est reliée à rien (charge retirée) : aucun courant ne la traverse, on la retire. La source liée vaut alors $U = i_o = 2\\,\\text{V}$, d'où directement :" },
+            { t: "formula", tex: "E_{th} = 2\\,\\text{V}" },
             { t: "p", v: "Résultats du DS : Rth = 3 Ω et Eth = 2 V (fourchettes 2,0-5,0 Ω et 1,9-2,2 V)." },
           ] },
       ]},
       { title: "Exercice 3 — Comparateur à hystérésis / trigger de Schmitt (5 pts)", items: [
         { n: "3.1", pts: "1 pt", q: [
-            { t: "p", v: "AOP idéal en comparateur inverseur à hystérésis : Vin sur l'entrée −, R2 = 2 kΩ ramène la sortie vers l'entrée +, R1 = 1 kΩ relie + à la masse. Vsat = 14 V. Tracer Vout = f(Vd) avec Vd = V+ − V−." },
+            { t: "p", v: "AOP idéal en comparateur inverseur à hystérésis : $V_{in}$ sur l'entrée −, $R_2 = 2\\,\\text{k}\\Omega$ ramène la sortie vers l'entrée +, $R_1 = 1\\,\\text{k}\\Omega$ relie + à la masse. $V_{sat} = 14\\,\\text{V}$. Tracer $V_{out} = f(V_d)$ avec $V_d = V^+ - V^-$." },
           ],
           indice: "La réaction passe par l'entrée + : l'AOP est saturé.",
           c: [
             { t: "schema", name: "aop-schmitt", legend: "La réaction passe par l'entrée + (pont R1/R2) : c'est ce qui crée l'hystérésis." },
-            { t: "p", v: "L'AOP est en saturation : si Vd > 0 alors Vout = +Vsat ; si Vd < 0 alors Vout = −Vsat. La caractéristique Vout = f(Vd) est une marche verticale en Vd = 0." },
+            { t: "p", v: "L'AOP est en saturation : si $V_d > 0$ alors $V_{out} = +V_{sat}$ ; si $V_d < 0$ alors $V_{out} = -V_{sat}$. La caractéristique $V_{out} = f(V_d)$ est une marche verticale en $V_d = 0$." },
           ] },
         { n: "3.2", pts: "2 pts", q: [
-            { t: "p", v: "Calculer VH, la valeur de Vin pour laquelle Vout bascule de +Vsat à −Vsat." },
+            { t: "p", v: "Calculer $V_H$, la valeur de $V_{in}$ pour laquelle $V_{out}$ bascule de $+V_{sat}$ à $-V_{sat}$." },
           ],
           indice: "Le basculement a lieu quand V+ = V−. Or V− = Vin et V+ se lit avec le diviseur de tension R1/(R1+R2) appliqué à Vout = +Vsat.",
           c: [
-            { t: "code", v: `Quand Vout = +Vsat :
-  V+ = R1/(R1+R2) x Vout    (diviseur de tension)
-  V- = Vin
-Basculement quand V+ = V- :
-  VH = R1/(R1+R2) x Vsat
-  VH = 1/(1+2) x 14
-  VH = 4,7 V` },
+            { t: "p", v: "Quand $V_{out} = +V_{sat}$, l'entrée + se lit par diviseur de tension et $V^- = V_{in}$. Le basculement a lieu lorsque $V^+ = V^-$ :" },
+            { t: "formula", tex: "V_H = \\frac{R_1}{R_1 + R_2} \\cdot V_{sat} = \\frac{1}{1 + 2} \\times 14 = 4,7\\,\\text{V}" },
             { t: "p", v: "Résultat du DS : VH = 4,7 V." },
           ] },
         { n: "3.3", pts: "1 pt", q: [
-            { t: "p", v: "Calculer VL, le seuil de basculement bas." },
+            { t: "p", v: "Calculer $V_L$, le seuil de basculement bas." },
           ],
           indice: "Même raisonnement, mais avec Vout = −Vsat.",
           c: [
-            { t: "code", v: `Quand Vout = -Vsat :
-  V+ = R1/(R1+R2) x (-Vsat)
-  VL = -R1/(R1+R2) x Vsat = -4,7 V` },
+            { t: "p", v: "Même raisonnement, cette fois avec $V_{out} = -V_{sat}$ :" },
+            { t: "formula", tex: "V_L = -\\frac{R_1}{R_1 + R_2} \\cdot V_{sat} = -4,7\\,\\text{V}" },
             { t: "p", v: "Résultat du DS : VL = −4,7 V. Les deux seuils sont symétriques." },
           ] },
         { n: "3.4", pts: "1 pt", q: [
-            { t: "p", v: "Tracer la caractéristique Vout = f(Vin) et proposer un exemple d'utilisation." },
+            { t: "p", v: "Tracer la caractéristique $V_{out} = f(V_{in})$ et proposer un exemple d'utilisation." },
           ],
           indice: "Entre VL et VH, la sortie dépend de l'histoire du signal : c'est le cycle d'hystérésis.",
           c: [
-            { t: "p", v: "La caractéristique est un cycle d'hystérésis entre VL = −4,7 V et VH = +4,7 V (comparateur inverseur : tant que Vin < VH, Vout = +Vsat ; dès que Vin > VH, Vout = −Vsat). Les flèches indiquent le sens de parcours du cycle." },
+            { t: "p", v: "La caractéristique est un cycle d'hystérésis entre $V_L = -4,7\\,\\text{V}$ et $V_H = +4,7\\,\\text{V}$ (comparateur inverseur : tant que $V_{in} < V_H$, $V_{out} = +V_{sat}$ ; dès que $V_{in} > V_H$, $V_{out} = -V_{sat}$). Les flèches indiquent le sens de parcours du cycle." },
             { t: "p", v: "Utilisation (réponse du DS) : mettre en forme un signal bruité — les deux seuils évitent les basculements parasites dus au bruit." },
           ] },
       ]},
@@ -4009,29 +3940,23 @@ Basculement quand V+ = V- :
             { t: "list", v: ["Résistance d'entrée Re = ∞", "Résistance de sortie Rs = 0", "Gain différentiel Avd = ∞", "Courants d'entrée nuls : i+ = i− = 0"] },
           ] },
         { n: "4.2", pts: "1 pt", q: [
-            { t: "p", v: "Le montage a une contre-réaction de la sortie vers l'entrée −. Quel est le régime de l'AOP ? Quelle conséquence pour V+ et V− ?" },
+            { t: "p", v: "Le montage a une contre-réaction de la sortie vers l'entrée −. Quel est le régime de l'AOP ? Quelle conséquence pour $V^+$ et $V^-$ ?" },
           ],
           indice: "Réaction sur l'entrée − = contre-réaction.",
           c: [
-            { t: "p", v: "Le signal de sortie est réinjecté sur la borne inverseuse : c'est une contre-réaction, qui stabilise la sortie. L'AOP fonctionne donc en régime linéaire. Conséquence : V+ = V−." },
+            { t: "p", v: "Le signal de sortie est réinjecté sur la borne inverseuse : c'est une contre-réaction, qui stabilise la sortie. L'AOP fonctionne donc en régime linéaire. Conséquence : $V^+ = V^-$." },
           ] },
         { n: "4.3", pts: "3 pts", q: [
-            { t: "p", v: "Montage : V1 = 3 V, R1 = 5 kΩ, R2 = 2 kΩ, R3 = 2 kΩ, R4 = 10 kΩ, R5 = 4 kΩ. Avec le théorème de Millman appliqué en V+ et V−, déterminer Vout." },
+            { t: "p", v: "Montage : $V_1 = 3\\,\\text{V}$, $R_1 = 5\\,\\text{k}\\Omega$, $R_2 = 2\\,\\text{k}\\Omega$, $R_3 = 2\\,\\text{k}\\Omega$, $R_4 = 10\\,\\text{k}\\Omega$, $R_5 = 4\\,\\text{k}\\Omega$. Avec le théorème de Millman appliqué en $V^+$ et $V^-$, déterminer $V_{out}$." },
           ],
           indice: "V+ se lit avec un diviseur de tension (R1, R4). V− s'obtient par Millman avec R2 et R3. Puis on écrit V+ = V−.",
           c: [
-            { t: "code", v: `V+ : diviseur de tension
-  V+ = R4/(R1+R4) x V1 = 10/(10+5) x 3 = 2 V
-
-V- : théorème de Millman
-  V- = (V1/R2 + Vout/R3) / (1/R2 + 1/R3)
-  V- = (3/2 + Vout/2) / (1/2 + 1/2)
-  V- = (3 + Vout) / 2
-
-Régime linéaire => V- = V+ :
-  (3 + Vout)/2 = 2
-  3 + Vout = 4
-  Vout = 1 V` },
+            { t: "p", v: "Calcul de $V^+$ par diviseur de tension :" },
+            { t: "formula", tex: "V^+ = \\frac{R_4}{R_1 + R_4} \\cdot V_1 = \\frac{10}{10 + 5} \\times 3 = 2\\,\\text{V}" },
+            { t: "p", v: "Calcul de $V^-$ par le théorème de Millman :" },
+            { t: "formula", tex: ["V^- = \\frac{V_1/R_2 + V_{out}/R_3}{1/R_2 + 1/R_3}", "V^- = \\frac{3/2 + V_{out}/2}{1/2 + 1/2} = \\frac{3 + V_{out}}{2}"] },
+            { t: "p", v: "En régime linéaire $V^- = V^+$, d'où :" },
+            { t: "formula", tex: ["\\frac{3 + V_{out}}{2} = 2 \\;\\Rightarrow\\; 3 + V_{out} = 4", "V_{out} = 1\\,\\text{V}"] },
             { t: "p", v: "Résultat du DS : Vout = 1 V (dans la fourchette 0,8-1,1 V)." },
           ] },
       ]},
@@ -4062,62 +3987,51 @@ Régime linéaire => V- = V+ :
     parts: [
       { title: "Exercice 1 — Filtrage (12 pts)", items: [
         { n: "1.1", pts: "2 pts", q: [
-            { t: "p", v: "Filtre : générateur sinusoïdal Vin, puis R1 et C en série, et R2 en sortie (Vout aux bornes de R2). Données : R1 = 9R, R2 = R, R = 10³ Ω, C = 10⁻⁶ F. Dessiner les schémas équivalents basse fréquence et haute fréquence." },
+            { t: "p", v: "Filtre : un générateur sinusoïdal $V_{in}$, puis $R_1$ et $C$ en série, et $R_2$ en sortie ($V_{out}$ aux bornes de $R_2$). Données : $R_1 = 9R$, $R_2 = R$, $R = 10^3\\,\\Omega$, $C = 10^{-6}\\,\\text{F}$. Dessiner les schémas équivalents basse fréquence et haute fréquence." },
           ],
           indice: "Le condensateur a pour impédance Zc = 1/(jCω). Quand ω→0, Zc→∞ ; quand ω→∞, Zc→0.",
           c: [
-            { t: "code", v: `Basse fréquence (ω -> 0) :
-  Zc -> infini  : le condensateur = interrupteur OUVERT
-  => aucun courant dans R2,  Vout = 0
-
-Haute fréquence (ω -> infini) :
-  Zc -> 0  : le condensateur = simple FIL
-  => Vout = R2/(R1+R2) x Vin  != 0` },
+            { t: "p", v: "Basse fréquence ($\\omega \\to 0$) : $Z_c \\to \\infty$, le condensateur se comporte comme un interrupteur ouvert. Aucun courant ne traverse $R_2$ :" },
+            { t: "formula", tex: "V_{out} = 0" },
+            { t: "p", v: "Haute fréquence ($\\omega \\to \\infty$) : $Z_c \\to 0$, le condensateur est un simple fil. On obtient un diviseur de tension :" },
+            { t: "formula", tex: "V_{out} = \\frac{R_2}{R_1 + R_2} \\cdot V_{in} \\neq 0" },
           ] },
         { n: "1.2", pts: "1,5 pt", q: [
             { t: "p", v: "En déduire la nature du filtre (passe-bas/passe-haut, passif/actif, ordre)." },
           ],
           indice: "Compare Vout en basse et en haute fréquence.",
           c: [
-            { t: "p", v: "Vout = 0 en basse fréquence et Vout ≠ 0 en haute fréquence : le filtre laisse passer les hautes fréquences. Réponses du DS : passe-haut, passif, du 1er ordre." },
+            { t: "p", v: "On a $V_{out} = 0$ en basse fréquence et $V_{out} \\neq 0$ en haute fréquence : le filtre laisse passer les hautes fréquences. Réponses du DS : passe-haut, passif, du 1er ordre." },
           ] },
         { n: "1.3", pts: "1,5 pt", q: [
-            { t: "p", v: "Donner H(jω) = Vout/Vin sous la forme ja/(1+jb), avec a et b en fonction de R et C." },
+            { t: "p", v: "Donner $H(j\\omega) = V_{out}/V_{in}$ sous la forme $\\frac{ja}{1 + jb}$, avec $a$ et $b$ en fonction de $R$ et $C$." },
           ],
           indice: "Pont diviseur de tension entre Zc, R1 et R2. Remplace ensuite R1 = 9R et R2 = R.",
           c: [
             { t: "formula", tex: "H(j\\omega) = \\frac{R_2}{R_1 + R_2 + Z_c}", note: "Pont diviseur de tension, avec Zc = 1/(jCω)." },
-            { t: "code", v: `Avec R1 = 9R, R2 = R et Zc = 1/(jCω) :
-  H(jω) = R / (10R + 1/(jCω))
-        = jRCω / (1 + 10 jRCω)
-
-  =>  a = RCω        b = 10 RCω` },
+            { t: "p", v: "Avec $R_1 = 9R$, $R_2 = R$ et $Z_c = \\frac{1}{jC\\omega}$ :" },
+            { t: "formula", tex: "H(j\\omega) = \\frac{R}{10R + \\frac{1}{jC\\omega}} = \\frac{jRC\\omega}{1 + 10\\, jRC\\omega}" },
+            { t: "p", v: "On identifie : $a = RC\\omega$ et $b = 10\\,RC\\omega$." },
           ] },
         { n: "1.4", pts: "1 pt", q: [
-            { t: "p", v: "Mettre H(jω) sous la forme (jω/ω1) / (1 + jω/ω0). Calculer ω0 et ω1." },
+            { t: "p", v: "Mettre $H(j\\omega)$ sous la forme $\\dfrac{j\\omega/\\omega_1}{1 + j\\omega/\\omega_0}$. Calculer $\\omega_0$ et $\\omega_1$." },
           ],
           indice: "Identifie terme à terme avec H = jRCω/(1 + 10jRCω).",
           c: [
-            { t: "code", v: `jRCω   = jω/ω1   =>  ω1 = 1/(RC)
-10 jRCω = jω/ω0  =>  ω0 = 1/(10 RC)
-
-ω1 = 1/(10³ x 10⁻⁶) = 1000 rad/s
-ω0 = 1/(10 x 10³ x 10⁻⁶) = 100 rad/s` },
+            { t: "p", v: "On identifie terme à terme :" },
+            { t: "formula", tex: ["jRC\\omega = \\frac{j\\omega}{\\omega_1} \\;\\Rightarrow\\; \\omega_1 = \\frac{1}{RC}", "10\\, jRC\\omega = \\frac{j\\omega}{\\omega_0} \\;\\Rightarrow\\; \\omega_0 = \\frac{1}{10\\,RC}"] },
+            { t: "p", v: "Numériquement :" },
+            { t: "formula", tex: ["\\omega_1 = \\frac{1}{10^3 \\times 10^{-6}} = 1000\\,\\text{rad/s}", "\\omega_0 = \\frac{1}{10 \\times 10^3 \\times 10^{-6}} = 100\\,\\text{rad/s}"] },
           ] },
         { n: "1.5", pts: "2 pts", q: [
-            { t: "p", v: "Déterminer la pulsation de coupure ωc du filtre (on doit vérifier 95 < ωc < 102 rad/s)." },
+            { t: "p", v: "Déterminer la pulsation de coupure $\\omega_c$ du filtre (on doit vérifier $95 < \\omega_c < 102\\,\\text{rad/s}$)." },
           ],
           indice: "À ωc, le gain vaut |H|max / √2. Le gain maximal est atteint quand ω → ∞.",
           c: [
-            { t: "code", v: `|H| = RCω / racine(1 + 100 (RCω)²)
-ω -> infini  :  |H|max = 1/10
-
-À la coupure :  |H(ωc)| = |H|max / racine(2)
-  10 racine(2) . RCωc = racine(1 + 100 (RCωc)²)
-  200 (RCωc)² = 1 + 100 (RCωc)²
-  100 (RCωc)² = 1
-  RCωc = 1/10
-  =>  ωc = 1/(10 RC) = 100 rad/s` },
+            { t: "p", v: "Le module de la fonction de transfert est :" },
+            { t: "formula", tex: "|H| = \\frac{RC\\omega}{\\sqrt{1 + 100\\,(RC\\omega)^2}}" },
+            { t: "p", v: "Quand $\\omega \\to \\infty$, le gain maximal vaut $|H|_{max} = \\frac{1}{10}$. À la coupure, $|H(\\omega_c)| = \\frac{|H|_{max}}{\\sqrt{2}}$ :" },
+            { t: "formula", tex: ["10\\sqrt{2}\\;RC\\omega_c = \\sqrt{1 + 100\\,(RC\\omega_c)^2}", "200\\,(RC\\omega_c)^2 = 1 + 100\\,(RC\\omega_c)^2", "100\\,(RC\\omega_c)^2 = 1 \\;\\Rightarrow\\; RC\\omega_c = \\frac{1}{10}", "\\omega_c = \\frac{1}{10\\,RC} = 100\\,\\text{rad/s}"] },
             { t: "p", v: "Résultat du DS : ωc = 100 rad/s." },
           ] },
         { n: "1.6", pts: "4 pts", q: [
@@ -4126,48 +4040,43 @@ Haute fréquence (ω -> infini) :
           indice: "Passe-haut du 1er ordre : pente +20 dB/déc avant ωc, plateau à 0 dB après.",
           c: [
             { t: "schema", name: "bode-passehaut", legend: "Gain : pente +20 dB/décade puis plateau à 0 dB ; coupure à -3 dB en ωc." },
-            { t: "p", v: "Gain : +20 dB/décade pour ω < ωc, puis plateau à 0 dB pour ω > ωc. Phase : +π/2 en basse fréquence, qui décroît vers 0 en haute fréquence (passage par +π/4 à ωc)." },
+            { t: "p", v: "Gain : $+20\\ \\text{dB/décade}$ pour $\\omega < \\omega_c$, puis plateau à $0\\,\\text{dB}$ pour $\\omega > \\omega_c$. Phase : $+\\frac{\\pi}{2}$ en basse fréquence, qui décroît vers $0$ en haute fréquence (passage par $+\\frac{\\pi}{4}$ à $\\omega_c$)." },
           ] },
       ]},
       { title: "Exercice 2 — Analyse du signal (8 pts)", items: [
         { n: "2.1", pts: "2 pts", q: [
-            { t: "p", v: "Signal créneau périodique de période T = 4 s : il vaut 3 V pendant 2 s, puis −1 V pendant 2 s. Déterminer la valeur moyenne ⟨s(t)⟩." },
+            { t: "p", v: "Signal créneau périodique de période $T = 4\\,\\text{s}$ : il vaut $3\\,\\text{V}$ pendant $2\\,\\text{s}$, puis $-1\\,\\text{V}$ pendant $2\\,\\text{s}$. Déterminer la valeur moyenne $\\langle s(t) \\rangle$." },
           ],
           indice: "La valeur moyenne = aire algébrique sur une période, divisée par T.",
           c: [
-            { t: "code", v: `⟨s(t)⟩ = (1/T) x aire sur une période
-       = (1/4) x (3 x 2 + (-1) x 2)
-       = (1/4) x (6 - 2)
-       = 4/4 = 1 V` },
+            { t: "p", v: "La valeur moyenne est l'aire algébrique sur une période, divisée par $T$ :" },
+            { t: "formula", tex: ["\\langle s(t) \\rangle = \\frac{1}{T} \\times (\\text{aire sur une période})", "\\langle s(t) \\rangle = \\frac{1}{4}\\big(3 \\times 2 + (-1) \\times 2\\big) = \\frac{6 - 2}{4} = 1\\,\\text{V}"] },
             { t: "p", v: "Résultat du DS : ⟨s(t)⟩ = 1 V." },
           ] },
         { n: "2.2", pts: "2 pts", q: [
-            { t: "p", v: "Déterminer la valeur efficace S de ce signal (3 chiffres significatifs)." },
+            { t: "p", v: "Déterminer la valeur efficace $S$ de ce signal (3 chiffres significatifs)." },
           ],
           indice: "Valeur efficace = racine de la moyenne du carré du signal.",
           c: [
-            { t: "code", v: `S = racine[ (1/T) x integrale de s²(t) dt ]
-S = racine[ (1/4) x (3² x 2 + (-1)² x 2) ]
-S = racine[ (1/4) x (18 + 2) ]
-S = racine(20/4) = racine(5) ≈ 2,24 V` },
+            { t: "p", v: "La valeur efficace est la racine de la moyenne du carré du signal :" },
+            { t: "formula", tex: ["S = \\sqrt{\\frac{1}{T} \\int s^2(t)\\, dt}", "S = \\sqrt{\\frac{1}{4}\\big(3^2 \\times 2 + (-1)^2 \\times 2\\big)} = \\sqrt{\\frac{20}{4}} = \\sqrt{5} \\approx 2,24\\,\\text{V}"] },
             { t: "p", v: "Résultat du DS : S ≈ 2,24 V." },
           ] },
         { n: "2.3", pts: "1 pt", q: [
-            { t: "p", v: "À l'aide des propriétés de symétrie du signal, déduire la valeur de Bn. Justifier." },
+            { t: "p", v: "À l'aide des propriétés de symétrie du signal, déduire la valeur de $B_n$. Justifier." },
           ],
           indice: "Regarde la symétrie par rapport à l'axe des ordonnées.",
           c: [
-            { t: "p", v: "Le signal est symétrique par rapport à l'axe des ordonnées : c'est un signal PAIR. Un signal pair ne contient aucune composante impaire (les sinus), donc Bn = 0." },
+            { t: "p", v: "Le signal est symétrique par rapport à l'axe des ordonnées : c'est un signal pair. Un signal pair ne contient aucune composante impaire (les sinus), donc $B_n = 0$." },
           ] },
         { n: "2.4", pts: "2 pts", q: [
-            { t: "p", v: "Exprimer An, puis calculer A0, A1 et A2." },
+            { t: "p", v: "Exprimer $A_n$, puis calculer $A_0$, $A_1$ et $A_2$." },
           ],
           indice: "Signal pair → An = (4/T)∫₀^(T/2) s(t)cos(nωt)dt. Découpe l'intégrale sur les deux paliers.",
           c: [
             { t: "formula", tex: "A_n = \\frac{8}{n\\pi} \\sin\\left(\\frac{n\\pi}{2}\\right)", note: "Résultat de l'intégration du créneau (signal pair)." },
-            { t: "code", v: `A0 = ⟨s(t)⟩ = 1 V
-A1 = (8/π) x sin(π/2) = 8/π ≈ 2,55
-A2 = (8/2π) x sin(π) = 0` },
+            { t: "p", v: "On en déduit les premiers coefficients :" },
+            { t: "formula", tex: ["A_0 = \\langle s(t) \\rangle = 1\\,\\text{V}", "A_1 = \\frac{8}{\\pi} \\sin\\left(\\frac{\\pi}{2}\\right) = \\frac{8}{\\pi} \\approx 2,55", "A_2 = \\frac{8}{2\\pi} \\sin(\\pi) = 0"] },
             { t: "p", v: "A1 = 8/π ≈ 2,55 et A2 = 0 sont encadrés sur la copie. A0 est la composante continue, égale à la valeur moyenne (1 V) — la case A0 du corrigé manuscrit a été laissée vide, valeur à confirmer sur le sujet original si besoin." },
           ] },
         { n: "2.5", pts: "1 pt", q: [
@@ -4206,73 +4115,60 @@ A2 = (8/2π) x sin(π) = 0` },
     parts: [
       { title: "Exercice 1 — Associations de résistances & diviseur de courant (5 pts)", items: [
         { n: "1.1", pts: "3 pts", q: [
-            { t: "p", v: "Une source de courant io = 10 A alimente R1 et l'association de R2 = 200 Ω, R3 = 300 Ω et R4 = 400 Ω. R2 et R3 sont en série, le tout en parallèle avec R4. Déterminer la résistance équivalente R234." },
+            { t: "p", v: "Une source de courant $i_o = 10\\,\\text{A}$ alimente $R_1$ et l'association de $R_2 = 200\\,\\Omega$, $R_3 = 300\\,\\Omega$ et $R_4 = 400\\,\\Omega$. $R_2$ et $R_3$ sont en série, le tout en parallèle avec $R_4$. Déterminer la résistance équivalente $R_{234}$." },
           ],
           indice: "Série : on additionne les résistances. Parallèle : produit sur somme.",
           c: [
-            { t: "code", v: `R2 en série avec R3 :
-  R23 = R2 + R3 = 200 + 300 = 500 Ohm
-
-R23 en parallèle avec R4 :
-  R234 = (R23 x R4) / (R23 + R4)
-  R234 = (500 x 400) / (500 + 400)
-  R234 = 200000 / 900 = 222 Ohm` },
+            { t: "p", v: "$R_2$ en série avec $R_3$ :" },
+            { t: "formula", tex: "R_{23} = R_2 + R_3 = 200 + 300 = 500\\,\\Omega" },
+            { t: "p", v: "$R_{23}$ en parallèle avec $R_4$ :" },
+            { t: "formula", tex: ["R_{234} = \\frac{R_{23} \\cdot R_4}{R_{23} + R_4}", "R_{234} = \\frac{500 \\times 400}{500 + 400} = \\frac{200000}{900} = 222\\,\\Omega"] },
             { t: "p", v: "Résultat du DS : R234 = 222 Ω." },
           ] },
         { n: "1.2", pts: "2 pts", q: [
-            { t: "p", v: "Le courant io = 10 A se partage entre R1 et R234. Déterminer R1 pour que le courant qui traverse R1 soit i1 = 3 A." },
+            { t: "p", v: "Le courant $i_o = 10\\,\\text{A}$ se partage entre $R_1$ et $R_{234}$. Déterminer $R_1$ pour que le courant qui traverse $R_1$ soit $i_1 = 3\\,\\text{A}$." },
           ],
           indice: "R1 et R234 sont en parallèle sous la source de courant : c'est un diviseur de courant.",
           c: [
             { t: "formula", tex: "i_1 = \\frac{R_{234}}{R_{234} + R_1} \\cdot i_o", note: "Diviseur de courant." },
-            { t: "code", v: `3 = 222 / (222 + R1) x 10
-3 (222 + R1) = 2220
-666 + 3 R1 = 2220
-R1 = (2220 - 666) / 3 = 1554 / 3 = 518 Ohm` },
+            { t: "p", v: "On isole $R_1$ :" },
+            { t: "formula", tex: ["3 = \\frac{222}{222 + R_1} \\times 10", "3\\,(222 + R_1) = 2220 \\;\\Rightarrow\\; 666 + 3 R_1 = 2220", "R_1 = \\frac{2220 - 666}{3} = \\frac{1554}{3} = 518\\,\\Omega"] },
             { t: "p", v: "Résultat du DS : R1 = 518 Ω (dans la fourchette 500-520 Ω)." },
           ] },
       ]},
       { title: "Exercice 2 — Théorème de Millman (5 pts)", items: [
         { n: "2.1", pts: "3 pts", q: [
-            { t: "p", v: "Circuit : R1 = 100 Ω relié à V1 = 10 V, une source de courant i2 = 2 A, R3 = 300 Ω vers la masse, R4 = 400 Ω relié à une source de 4 V. Déterminer le potentiel VA aux bornes de R3 par le théorème de Millman." },
+            { t: "p", v: "Circuit : $R_1 = 100\\,\\Omega$ relié à $V_1 = 10\\,\\text{V}$, une source de courant $i_2 = 2\\,\\text{A}$, $R_3 = 300\\,\\Omega$ vers la masse, $R_4 = 400\\,\\Omega$ relié à une source de $4\\,\\text{V}$. Déterminer le potentiel $V_A$ aux bornes de $R_3$ par le théorème de Millman." },
           ],
           indice: "Millman : on somme les V/R de chaque branche (et les courants injectés), divisé par la somme des 1/R. Attention au signe selon l'orientation des sources.",
           c: [
             { t: "formula", tex: "V_A = \\frac{\\sum \\frac{V_k}{R_k} + \\sum I_k}{\\sum \\frac{1}{R_k}}", note: "Théorème de Millman au nœud A." },
-            { t: "code", v: `VA = ( -V1/R1 + i2 + 0/R3 + 4/R4 ) / ( 1/R1 + 1/R3 + 1/R4 )
-VA = ( -10/100 + 2 + 0 + 4/400 ) / ( 1/100 + 1/300 + 1/400 )
-VA = ( -0,1 + 2 + 0,01 ) / ( 0,01 + 0,00333 + 0,0025 )
-VA = 1,91 / 0,01583
-VA = 121 V` },
+            { t: "p", v: "On reporte les valeurs branche par branche :" },
+            { t: "formula", tex: ["V_A = \\frac{-V_1/R_1 + i_2 + 0/R_3 + 4/R_4}{1/R_1 + 1/R_3 + 1/R_4}", "V_A = \\frac{-10/100 + 2 + 4/400}{1/100 + 1/300 + 1/400}", "V_A = \\frac{-0,1 + 2 + 0,01}{0,01 + 0,00333 + 0,0025} = \\frac{1,91}{0,01583} = 121\\,\\text{V}"] },
             { t: "p", v: "Résultat du DS : VA = 121 V." },
           ] },
         { n: "2.2", pts: "2 pts", q: [
-            { t: "p", v: "En déduire l'intensité i3 traversant la résistance R3." },
+            { t: "p", v: "En déduire l'intensité $i_3$ traversant la résistance $R_3$." },
           ],
           indice: "R3 est entre le potentiel VA et la masse : loi d'Ohm.",
           c: [
-            { t: "code", v: `Loi d'Ohm sur R3 :
-  i3 = (VA - 0) / R3 = 121 / 300 = 0,4 A` },
+            { t: "p", v: "$R_3$ est entre le potentiel $V_A$ et la masse — loi d'Ohm :" },
+            { t: "formula", tex: "i_3 = \\frac{V_A - 0}{R_3} = \\frac{121}{300} = 0,4\\,\\text{A}" },
             { t: "p", v: "Résultat du DS : i3 = 0,4 A (dans la fourchette 0,4-0,8 A)." },
           ] },
       ]},
       { title: "Exercice 3 — Théorème de superposition (5 pts)", items: [
         { n: "3.1", pts: "4 pts", q: [
-            { t: "p", v: "Circuit avec une source de 24 V (et une résistance 8 Ω), une source de 12 V, et des résistances 4 Ω, 4 Ω, 3 Ω. Déterminer le potentiel VA aux bornes de la résistance de 3 Ω par le théorème de superposition (2 schémas attendus)." },
+            { t: "p", v: "Circuit avec une source de $24\\,\\text{V}$ (et une résistance $8\\,\\Omega$), une source de $12\\,\\text{V}$, et des résistances $4\\,\\Omega$, $4\\,\\Omega$, $3\\,\\Omega$. Déterminer le potentiel $V_A$ aux bornes de la résistance de $3\\,\\Omega$ par le théorème de superposition (2 schémas attendus)." },
           ],
           indice: "On garde une seule source active à la fois ; les sources de tension éteintes deviennent des court-circuits.",
           c: [
-            { t: "code", v: `Source de 12 V seule (source 24 V court-circuitée) :
-  3 Ohm // 4 Ohm = (3 x 4)/(3 + 4) = 12/7 ≈ 1,714 Ohm
-  Diviseur de tension :
-  VA1 = 1,714 / (1,714 + 4) x 12 = 3,6 V
-
-Source de 24 V seule (source 12 V court-circuitée) :
-  La partie haute du circuit se retrouve coincée entre
-  deux masses : on peut la retirer. Il ne reste plus
-  aucune source côté A  =>  VA2 = 0 V
-
-VA = VA1 + VA2 = 3,6 + 0 = 3,6 V` },
+            { t: "p", v: "Source de $12\\,\\text{V}$ seule (source $24\\,\\text{V}$ court-circuitée). On associe les résistances puis on applique un diviseur de tension :" },
+            { t: "formula", tex: ["3\\,\\Omega \\parallel 4\\,\\Omega = \\frac{3 \\times 4}{3 + 4} = \\frac{12}{7} \\approx 1,714\\,\\Omega", "V_{A1} = \\frac{1,714}{1,714 + 4} \\times 12 = 3,6\\,\\text{V}"] },
+            { t: "p", v: "Source de $24\\,\\text{V}$ seule (source $12\\,\\text{V}$ court-circuitée) : la partie haute du circuit se retrouve coincée entre deux masses, on peut la retirer. Il ne reste plus aucune source côté A :" },
+            { t: "formula", tex: "V_{A2} = 0\\,\\text{V}" },
+            { t: "p", v: "Par superposition :" },
+            { t: "formula", tex: "V_A = V_{A1} + V_{A2} = 3,6 + 0 = 3,6\\,\\text{V}" },
             { t: "p", v: "Résultat du DS : VA = 3,6 V (dans la fourchette 3,5-4,0 V)." },
           ] },
         { n: "3.2", pts: "1 pt", q: [
@@ -4280,32 +4176,26 @@ VA = VA1 + VA2 = 3,6 + 0 = 3,6 V` },
           ],
           indice: "Compare la contribution de chacune des deux sources au potentiel VA.",
           c: [
-            { t: "p", v: "La source de 24 V n'apporte aucune contribution au potentiel du point A : seule la source de 12 V compte. C'est ce qu'a révélé le calcul (VA2 = 0)." },
+            { t: "p", v: "La source de 24 V n'apporte aucune contribution au potentiel du point A : seule la source de 12 V compte. C'est ce qu'a révélé le calcul ($V_{A2} = 0$)." },
           ] },
       ]},
       { title: "Exercice 4 — Méthode des nœuds (5 pts)", items: [
         { n: "4.1", pts: "1 pt", q: [
-            { t: "p", v: "Le circuit comporte une source de valeur 2·io. Comment s'appelle ce type de source ?" },
+            { t: "p", v: "Le circuit comporte une source de valeur $2 i_o$. Comment s'appelle ce type de source ?" },
           ],
           indice: "Sa valeur dépend d'un courant du circuit.",
           c: [
             { t: "p", v: "C'est une source dépendante (ou liée) de courant, commandée en courant." },
           ] },
         { n: "4.2", pts: "4 pts", q: [
-            { t: "p", v: "Déterminer les potentiels VA, VB et VC par la méthode des nœuds (le circuit a une source liée 2io, une source de 2 A et des résistances 3, 2, 5 et 4 Ω)." },
+            { t: "p", v: "Déterminer les potentiels $V_A$, $V_B$ et $V_C$ par la méthode des nœuds (le circuit a une source liée $2 i_o$, une source de $2\\,\\text{A}$ et des résistances $3$, $2$, $5$ et $4\\,\\Omega$)." },
           ],
           indice: "Une loi des nœuds par nœud inconnu (3 nœuds → 3 équations) ; les courants sont exprimés par la loi d'Ohm en fonction des potentiels.",
           c: [
-            { t: "code", v: `On écrit la loi des nœuds en A, B et C, puis on remplace
-chaque courant par les potentiels (loi d'Ohm). Après mise
-en forme, on obtient le système :
-
-  -5 VA + 3 VB + 3 VC = 0
-        19 VB - 4 VC = 0
-   5 VA + 2 VB - 7 VC = -20
-
-Résolu à la calculatrice :
-  VA = 4,93 V     VB = 1,43 V     VC = 6,79 V` },
+            { t: "p", v: "On écrit la loi des nœuds en A, B et C, puis on remplace chaque courant par les potentiels (loi d'Ohm). Après mise en forme, on obtient le système :" },
+            { t: "formula", tex: "\\begin{cases} -5 V_A + 3 V_B + 3 V_C = 0 \\\\ 19 V_B - 4 V_C = 0 \\\\ 5 V_A + 2 V_B - 7 V_C = -20 \\end{cases}" },
+            { t: "p", v: "Résolu à la calculatrice :" },
+            { t: "formula", tex: "V_A = 4,93\\,\\text{V} \\qquad V_B = 1,43\\,\\text{V} \\qquad V_C = 6,79\\,\\text{V}" },
             { t: "p", v: "Résultats du DS : VA = 4,93 V, VB = 1,43 V, VC = 6,79 V." },
           ] },
       ]},
@@ -4603,28 +4493,29 @@ const TOMBE = [
     pieges: ["Oublier le & dans scanf", "free de la structure avant son champ dynamique", "Boucle while(!fileVide) en réenfilant → boucle infinie", "Oublier de tester le retour de malloc", "Ne pas caster le void* renvoyé par defiler"],
     formules: ["Schéma chaîne dynamique : fgets → strcspn → malloc(strlen+1) → strcpy", "Allouer un tableau : malloc(n * sizeof(type))", "p->champ équivaut à (*p).champ"],
     methodes: ["Lire le prototype puis dérouler à la main", "Écrire l'algo en français avant le C", "Toujours libérer dans l'ordre inverse de l'allocation"],
-    prioritaires: ["x-i1", "x-i2", "x-i7", "x-i8"] },
+    prioritaires: ["x-i1", "x-i2", "x-i7", "x-i8"], fiches: ["i-ptr", "i-alloc", "i-pf", "i-liste", "i-struct"] },
   { subject: "math",
     chapitres: ["Développements limités", "Intégrales généralisées", "Systèmes linéaires (Gauss)", "Déterminants", "Matrice inverse"],
     exos: ["Calculer un DL puis une limite", "Étudier la nature d'une intégrale généralisée", "Résoudre un système AX = B", "Calculer un déterminant 3×3", "Inverser une matrice 2×2 ou 3×3"],
     pieges: ["Confondre les débuts de DL (sin, cos, ln)", "Oublier le reste o(xⁿ)", "Inverser le critère de Riemann selon la borne", "Erreur de signe dans les cofacteurs", "Croire que AB = BA"],
     formules: ["DL usuels : eˣ, ln(1+x), sin, cos, (1+x)ᵅ", "Riemann : α>1 à l'infini, β<1 en 0", "det 2×2 = ad−bc ; inverse 2×2 = 1/(ad−bc)·[[d,−b],[−c,a]]"],
     methodes: ["DL : se ramener en 0, combiner les DL usuels, tronquer", "Intégrale : équivalent en la borne + comparaison Riemann", "Système : matrice augmentée puis Gauss"],
-    prioritaires: ["x-m1", "x-m2", "x-m3", "x-m4"] },
+    prioritaires: ["x-m1", "x-m2", "x-m3", "x-m4"], fiches: ["m-dl", "m-int", "m-mat", "m-det", "m-sys"] },
   { subject: "meca",
     chapitres: ["Théorème de l'énergie cinétique", "Énergie mécanique & conservation", "Oscillateur harmonique", "Oscillateur amorti (3 régimes)", "Travail & puissance"],
     exos: ["Trouver une vitesse par le TEC", "Conservation de l'énergie sur un parcours", "Mettre un oscillateur en équation (forces ou énergie)", "Identifier le régime d'un oscillateur amorti", "Lire une courbe x(t) ou θ(t)"],
     pieges: ["Confondre travail et puissance", "Appliquer la conservation de Em malgré des frottements", "Confondre fréquence f et pulsation ω", "Mauvais signe du travail des frottements", "Mal identifier le régime"],
     formules: ["Ec = ½mv² ; Ep(ressort) = ½kx² ; Ep(pesanteur) = mgz", "TEC : ΔEc = ΣW ; TEM : ΔEm = W(non conservatif)", "ω₀ = √(k/m) ou √(g/L) ; T₀ = 2π/ω₀"],
     methodes: ["Choisir TEC/TEM/PFD selon ce qu'on cherche", "Méthode énergétique : Em puis dEm/dt", "Reconnaître le régime à l'allure de la courbe"],
-    prioritaires: ["x-c1", "x-c2", "x-c3"] },
+    prioritaires: ["x-c1", "x-c2", "x-c3"], fiches: ["me-trav", "me-em", "me-osc", "me-amort", "me-pfd"] },
   { subject: "elec",
-    chapitres: ["Lois (Ohm, Kirchhoff, associations)", "Diviseur de tension", "Régime sinusoïdal & impédances", "Filtres & diagramme de Bode", "Amplificateur opérationnel"],
-    exos: ["Calculer une résistance équivalente", "Appliquer le diviseur de tension", "Trouver une fonction de transfert et f_c", "Lire un diagramme de Bode (type, ordre)", "Analyser un montage AOP"],
-    pieges: ["Lire le −3 dB sur la phase au lieu du gain", "Confondre passe-bas et passe-haut", "Oublier le 20·log pour le gain en dB", "Écrire V⁺ = V⁻ sans contre-réaction", "Oublier les impédances complexes"],
-    formules: ["U = R·I ; R série = ΣR ; R parallèle = produit/somme", "Diviseur : U₂ = U·R₂/(R₁+R₂)", "ω_c = 1/(RC) ; G_dB = 20·log₁₀(|H|)", "AOP non inverseur : Vs = (1+R₂/R₁)·Ve"],
-    methodes: ["Identifier un filtre par son comportement BF/HF", "Lire un Bode : type → coupure → ordre → bande passante", "AOP : vérifier la contre-réaction, poser i=0 et V⁺=V⁻"],
-    prioritaires: ["x-e1", "x-e3", "x-e4", "x-e5"] },
+    chapitres: ["Thévenin/Norton (sources indépendantes)", "Thévenin avec sources liées", "Millman & méthode des nœuds", "Filtres RC & H(jω) (passe-haut/-bas)", "Diagrammes de Bode (gain & phase)", "AOP linéaire & trigger de Schmitt", "Valeur moyenne, valeur efficace, séries de Fourier"],
+    exos: ["Calculer Rth/Eth et Rn/In, puis le courant dans la charge (diviseur de courant)", "Traiter une source liée avec un générateur de test", "Trouver le potentiel d'un nœud par Millman", "Donner H(jω), la nature et ωc d'un filtre RC", "Tracer le Bode asymptotique (gain + phase, pente, −3 dB)", "Calculer VH et VL d'un trigger de Schmitt", "Calculer ⟨s⟩, S et les coefficients de Fourier d'un créneau"],
+    pieges: ["Éteindre une source liée comme une source indépendante", "Oublier le signe de In (orientation imposée A→B)", "Inverser le comportement de C en BF et HF", "Écrire V⁺ = V⁻ sans vérifier la contre-réaction", "Oublier le facteur R₁/(R₁+R₂) pour les seuils du trigger", "Confondre valeur moyenne et valeur efficace", "Rendre un résultat sous forme fractionnaire (interdit dans ce DS)"],
+    formules: ["Rth = V_test / I_test (sources liées) ; Eth = UAB à vide ; io = Rn/(Rn+Rc)·In", "Millman : VA = (ΣVk/Rk + ΣIk) / Σ(1/Rk)", "Zc = 1/(jCω) ; ωc = 1/(RC) pour passe-bas simple", "VH = R₁/(R₁+R₂)·Vsat ; VL = −VH", "S = √[(1/T)∫s²dt] ; An = (8/nπ)·sin(nπ/2) pour le créneau"],
+    methodes: ["Reconnaître le type : Thévenin/Norton, Millman, nœuds, AOP, filtre, Bode, Fourier", "Éteindre les sources INDÉPENDANTES pour Rth ; garder les sources liées", "Pour un filtre : schéma BF (C=ouvert) et HF (C=fil) → nature → H(jω) → ωc", "Pour l'AOP : identifier le régime (linéaire ou saturé) avant tout calcul"],
+    prioritaires: ["x-e14", "x-e16", "x-e17", "x-e18", "x-e19"],
+    fiches: ["e-lois", "e-div", "e-filtre", "e-bode", "e-aop", "e-methode"] },
 ];
 
 /* ================== MÉTHODES DE PARTIEL ================== */
@@ -4773,7 +4664,17 @@ function VideoCard({ v }) {
   const typeLabel = { cours: "Cours", methode: "Méthode", exo: "Exercice corrigé" };
   const nivLabel = { debutant: "Débutant", normal: "Normal", avance: "Avancé" };
   const nivColor = { debutant: T.green, normal: T.amber, avance: T.coral };
-  const isSearch = (v.url || "").indexOf("/results?") !== -1 || (v.url || "").indexOf("search_query") !== -1;
+  const url = v.url || "";
+  const vkind = (!/^https?:\/\//.test(url) || /XXXX/i.test(url))
+    ? "remplacer"
+    : (url.indexOf("/results?") !== -1 || url.indexOf("search_query") !== -1)
+      ? "recherche"
+      : "directe";
+  const vbadge = {
+    directe: { c: T.green, txt: "▶ Vidéo directe" },
+    recherche: { c: T.amber, txt: "🔎 Recherche YouTube" },
+    remplacer: { c: T.coral, txt: "⚠ Lien à remplacer" },
+  }[vkind];
   return (
     <div className="ece-card" style={{
       background: T.bg2, border: `1px solid ${T.line}`, borderLeft: `3px solid ${sj.color}`,
@@ -4799,18 +4700,19 @@ function VideoCard({ v }) {
         }}>{nivLabel[v.niveau]}</span>
         <span style={{
           fontFamily: "'JetBrains Mono', monospace", fontSize: 9, fontWeight: 700,
-          color: isSearch ? T.amber : T.green,
-          border: `1px solid ${isSearch ? T.amber : T.green}66`, borderRadius: 5, padding: "2px 6px",
-        }}>{isSearch ? "🔎 Recherche YouTube" : "▶ Vidéo directe"}</span>
+          color: vbadge.c,
+          border: `1px solid ${vbadge.c}66`, borderRadius: 5, padding: "2px 6px",
+        }}>{vbadge.txt}</span>
       </div>
       <div style={{ fontSize: 12.3, color: T.dim, lineHeight: 1.5, marginTop: 6 }}>{v.desc}</div>
-      <a href={v.url} target="_blank" rel="noopener noreferrer"
+      <a href={url || undefined} target="_blank" rel="noopener noreferrer"
         style={{
           display: "inline-block", marginTop: 9, textDecoration: "none",
-          background: "#ec4030", color: "#fff", borderRadius: 8,
+          background: vkind === "remplacer" ? T.bg4 : "#ec4030",
+          color: vkind === "remplacer" ? T.dim : "#fff", borderRadius: 8,
           padding: "8px 14px", fontFamily: "'JetBrains Mono', monospace",
           fontSize: 11.5, fontWeight: 700,
-        }}>{isSearch ? "🔎 Rechercher sur YouTube" : "▶ Voir la vidéo"}</a>
+        }}>{vkind === "directe" ? "▶ Voir la vidéo" : vkind === "recherche" ? "🔎 Rechercher sur YouTube" : "⚠ Lien à compléter"}</a>
     </div>
   );
 }
@@ -5396,22 +5298,23 @@ function renderTexNode(node, key) {
   }
 
   if (node.k === "mat") {
-    const open = node.env === "bmatrix" ? "[" : node.env === "vmatrix" ? "|" : node.env === "Bmatrix" ? "{" : "(";
-    const close = node.env === "bmatrix" ? "]" : node.env === "vmatrix" ? "|" : node.env === "Bmatrix" ? "}" : ")";
+    const isCases = node.env === "cases";
+    const open = isCases ? "{" : node.env === "bmatrix" ? "[" : node.env === "vmatrix" ? "|" : node.env === "Bmatrix" ? "{" : "(";
+    const close = isCases ? "" : node.env === "bmatrix" ? "]" : node.env === "vmatrix" ? "|" : node.env === "Bmatrix" ? "}" : ")";
     const showParens = node.env !== "matrix";
     const parenSize = Math.max(1.3, node.rows.length * 1.15);
     const cols = (node.rows[0] && node.rows[0].length) || 1;
     return (
       <span key={key} style={{ display: "inline-flex", alignItems: "center", verticalAlign: "middle", margin: "0 0.1em" }}>
         {showParens && <span style={{ fontSize: parenSize + "em", lineHeight: 0.9 }}>{open}</span>}
-        <span style={{ display: "inline-grid", gridTemplateColumns: `repeat(${cols}, auto)`, gap: "0.15em 0.7em", padding: "0 0.18em" }}>
+        <span style={{ display: "inline-grid", gridTemplateColumns: `repeat(${cols}, auto)`, gap: isCases ? "0.32em 0.7em" : "0.15em 0.7em", padding: "0 0.18em" }}>
           {node.rows.map((row, ri) =>
             row.map((cell, ci) => (
-              <span key={ri + "-" + ci} style={{ textAlign: "center" }}>{renderTexNodes(cell)}</span>
+              <span key={ri + "-" + ci} style={{ textAlign: isCases ? "left" : "center" }}>{renderTexNodes(cell)}</span>
             ))
           )}
         </span>
-        {showParens && <span style={{ fontSize: parenSize + "em", lineHeight: 0.9 }}>{close}</span>}
+        {showParens && close && <span style={{ fontSize: parenSize + "em", lineHeight: 0.9 }}>{close}</span>}
       </span>
     );
   }
@@ -7366,11 +7269,23 @@ function MethodesView({ go }) {
           </ol>
         </div>
       ))}
+
+      <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px solid ${T.line}` }}>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: T.faint, marginBottom: 8, letterSpacing: 1 }}>
+          GUIDES DÉTAILLÉS — RECONNAÎTRE L'EXERCICE
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button onClick={() => go({ view: "reconnaitreinfo" })} style={primBtn(T.cyan)}>
+            ▶ Informatique
+          </button>
+          <button onClick={() => go({ view: "reconnaitreelec" })} style={primBtn(T.green)}>
+            ▶ Électronique
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
-
-/* ================== GÉNÉRATEUR DE SUJET ================== */
 
 function GenerateurView({ progress, handlers, go }) {
   const [subj, setSubj] = useState("info");
@@ -7520,6 +7435,28 @@ function TombeView({ go }) {
       <Bloc label="Pièges classiques" color={T.coral} icon="✗" items={data.pieges} />
       <Bloc label="Formules à connaître" color={T.yellow} icon="∑" items={data.formules} />
       <Bloc label="Méthodes à maîtriser" color={T.green} icon="◎" items={data.methodes} />
+
+      {data.fiches && (
+        <div style={panelSt()}>
+          <PanelLabel color={T.violet}>▣ Fiches à revoir en priorité</PanelLabel>
+          {data.fiches.map((id) => {
+            const f = ALL_FICHES.find((fi) => fi.id === id);
+            if (!f) return null;
+            return (
+              <div key={id} onClick={() => go({ view: "subject", id: f.subject, fiche: f.id })}
+                style={{
+                  background: T.bg3, border: `1px solid ${T.line}`, borderRadius: 9,
+                  padding: "9px 12px", marginBottom: 6, cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 9,
+                }}>
+                <span style={{ color: T.violet, fontSize: 13 }}>▣</span>
+                <span style={{ flex: 1, fontSize: 12.7, color: T.txt, fontWeight: 600 }}>{f.title}</span>
+                <span style={{ color: T.faint, fontSize: 14 }}>›</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <div style={panelSt()}>
         <PanelLabel color={T.amber}>★ Exercices prioritaires à faire</PanelLabel>
@@ -8565,8 +8502,245 @@ function ExoList({ exos, progress, handlers }) {
   );
 }
 
+function InteractiveExoView({ exo, sj, back, progress, handlers }) {
+  const inter = EXO_INTERACTIVE[exo.id];
+  const KEY = "ece-ans-" + exo.id;
+  const [tab, setTab] = useState("enonce");
+  const [answer, setAnswer] = useState(() => {
+    try { return eceStorage.get(KEY) || ""; } catch (e) { return ""; }
+  });
+  const [verified, setVerified] = useState(false);
+  const [showCorr, setShowCorr] = useState(false);
+  const done = (progress.exos || []).includes(exo.id);
+  const topRef = useRef(null);
+  useEffect(() => { if (topRef.current) topRef.current.scrollIntoView({ block: "start" }); }, []);
+
+  const save = (v) => { setAnswer(v); try { eceStorage.set(KEY, v); } catch (e) {} };
+  const a = answer.toLowerCase();
+  const results = inter.criteres.map((c) => ({
+    l: c.l,
+    ok: answer.trim().length > 0 && c.k.some((k) => a.includes(k.toLowerCase())),
+  }));
+  const score = results.filter((r) => r.ok).length;
+  const total = results.length;
+  const allOk = score === total;
+
+  const TABS = [
+    { id: "enonce", l: "Énoncé" },
+    { id: "reponse", l: "Ma réponse" },
+    { id: "indice", l: "Indice" },
+    { id: "criteres", l: "Critères" },
+    { id: "correction", l: "Correction" },
+  ];
+
+  const SubTitle = ({ children, color }) => (
+    <div style={{
+      fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700,
+      color: color || sj.color, letterSpacing: 0.8, margin: "0 0 7px",
+    }}>{children}</div>
+  );
+
+  return (
+    <div ref={topRef}>
+      <BackBar onBack={back} label="Liste des exercices" />
+      <div style={{ borderLeft: `3px solid ${sj.color}`, paddingLeft: 13, marginBottom: 12 }}>
+        <div style={{ display: "flex", gap: 7, alignItems: "center", flexWrap: "wrap" }}>
+          <span style={{ fontSize: 11, color: sj.color, fontFamily: "'JetBrains Mono', monospace" }}>{sj.name}</span>
+          <DiffBadge d={exo.difficulty} />
+          <span style={{ fontSize: 10.5, color: T.faint, fontFamily: "'JetBrains Mono', monospace" }}>⏱ {exo.temps}</span>
+          <span style={{
+            fontSize: 9.5, color: T.cyan, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700,
+            background: `${T.cyan}1a`, border: `1px solid ${T.cyan}55`, borderRadius: 5, padding: "2px 7px",
+          }}>● INTERACTIF</span>
+        </div>
+        <h2 style={{ ...titleSt(19), marginTop: 5 }}>{exo.title}</h2>
+      </div>
+
+      {/* onglets */}
+      <div style={{ display: "flex", gap: 5, overflowX: "auto", paddingBottom: 6, marginBottom: 12 }}>
+        {TABS.map((t) => {
+          const on = tab === t.id;
+          return (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              style={{
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 11.5, fontWeight: 700,
+                padding: "7px 12px", borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap",
+                background: on ? sj.color : T.bg3,
+                color: on ? T.bg : T.dim,
+                border: `1px solid ${on ? sj.color : T.line}`,
+              }}>
+              {t.l}{t.id === "criteres" && verified ? ` ${score}/${total}` : ""}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ÉNONCÉ */}
+      {tab === "enonce" && (
+        <div>
+          <div style={panelSt()}>
+            <PanelLabel color={sj.color}>Énoncé</PanelLabel>
+            {exo.enonce.map((b, i) => <Block key={i} b={b} color={sj.color} />)}
+          </div>
+          <div style={panelSt()}>
+            <PanelLabel color={T.cyan}>Méthode conseillée</PanelLabel>
+            <ol style={{ margin: "3px 0", paddingLeft: 19 }}>
+              {exo.methode.map((m, i) => (
+                <li key={i} style={{ fontSize: 13, color: T.txt, lineHeight: 1.6, margin: "4px 0" }}>{m}</li>
+              ))}
+            </ol>
+          </div>
+          <button onClick={() => setTab("reponse")} style={{ ...primBtn(sj.color), width: "100%" }}>
+            ✎ Écrire ma réponse →
+          </button>
+        </div>
+      )}
+
+      {/* MA RÉPONSE */}
+      {tab === "reponse" && (
+        <div>
+          <div style={panelSt()}>
+            <PanelLabel color={T.cyan}>Ma réponse</PanelLabel>
+            <p style={{ fontSize: 11.7, color: T.dim, lineHeight: 1.5, margin: "0 0 8px" }}>
+              Écris ta réponse ci-dessous (code C ou pseudo-code). Elle est sauvegardée
+              automatiquement sur cet appareil.
+            </p>
+            <textarea
+              value={answer}
+              onChange={(e) => save(e.target.value)}
+              spellCheck={false}
+              placeholder="// Écris ton code ici..."
+              style={{
+                width: "100%", minHeight: 230, resize: "vertical", boxSizing: "border-box",
+                background: T.bg, color: T.txt, border: `1px solid ${T.line}`, borderRadius: 9,
+                padding: "11px 12px", fontFamily: "'JetBrains Mono', monospace", fontSize: 12.3,
+                lineHeight: 1.55, outline: "none",
+              }} />
+            <div style={{ display: "flex", gap: 8, marginTop: 9, flexWrap: "wrap" }}>
+              <button onClick={() => { setVerified(true); setTab("criteres"); }} style={primBtn(sj.color)}>
+                ✓ Vérifier ma réponse
+              </button>
+              <button onClick={() => save("")} style={ghostBtn()}>Effacer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* INDICE */}
+      {tab === "indice" && (
+        <div style={{
+          background: "rgba(232,200,74,0.08)", border: `1px solid ${T.yellow}44`,
+          borderRadius: 10, padding: "12px 14px",
+        }}>
+          <PanelLabel color={T.yellow}>Indice</PanelLabel>
+          <div style={{ fontSize: 13, color: T.txt, lineHeight: 1.6 }}>{exo.indice}</div>
+        </div>
+      )}
+
+      {/* CRITÈRES */}
+      {tab === "criteres" && (
+        <div>
+          {!verified ? (
+            <div style={panelSt()}>
+              <PanelLabel color={sj.color}>Critères attendus</PanelLabel>
+              <p style={{ fontSize: 12, color: T.dim, lineHeight: 1.5, margin: "0 0 8px" }}>
+                Voici les points que ta réponse doit contenir. Écris ta réponse puis
+                clique sur « Vérifier ».
+              </p>
+              {inter.criteres.map((c, i) => (
+                <div key={i} style={{ display: "flex", gap: 8, margin: "5px 0", fontSize: 12.5, color: T.txt }}>
+                  <span style={{ color: T.faint }}>○</span>{c.l}
+                </div>
+              ))}
+              <button onClick={() => setTab("reponse")} style={{ ...primBtn(sj.color), marginTop: 9 }}>
+                ✎ Aller à ma réponse
+              </button>
+            </div>
+          ) : (
+            <div>
+              <div style={{
+                background: `${(allOk ? T.green : score > 0 ? T.amber : T.coral)}14`,
+                border: `1px solid ${(allOk ? T.green : score > 0 ? T.amber : T.coral)}55`,
+                borderRadius: 11, padding: "13px 15px", marginBottom: 11, textAlign: "center",
+              }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 26, fontWeight: 800, color: allOk ? T.green : score > 0 ? T.amber : T.coral }}>
+                  {score} / {total}
+                </div>
+                <div style={{ fontSize: 12, color: T.dim, marginTop: 2 }}>
+                  {allOk ? "Tous les critères sont présents — solide !"
+                    : score > 0 ? "Bonne base : complète les points manquants ci-dessous."
+                    : "Reprends l'énoncé et la méthode, puis réessaie."}
+                </div>
+              </div>
+              <div style={panelSt()}>
+                <PanelLabel color={sj.color}>Détail des critères</PanelLabel>
+                {results.map((r, i) => (
+                  <div key={i} style={{
+                    display: "flex", gap: 9, alignItems: "flex-start", padding: "7px 0",
+                    borderBottom: i < results.length - 1 ? `1px solid ${T.line}` : "none",
+                  }}>
+                    <span style={{
+                      width: 19, height: 19, borderRadius: 5, flexShrink: 0,
+                      background: r.ok ? `${T.green}22` : `${T.coral}1c`,
+                      color: r.ok ? T.green : T.coral, fontSize: 12, fontWeight: 800,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>{r.ok ? "✓" : "✗"}</span>
+                    <span style={{ fontSize: 12.5, color: r.ok ? T.txt : T.dim, lineHeight: 1.45 }}>{r.l}</span>
+                  </div>
+                ))}
+                <p style={{ fontSize: 10.5, color: T.faint, lineHeight: 1.5, margin: "9px 0 0", fontStyle: "italic" }}>
+                  Vérification heuristique par mots-clés : c'est une aide à la relecture,
+                  pas une note. Compare toujours avec la correction.
+                </p>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button onClick={() => setTab("reponse")} style={ghostBtn()}>✎ Modifier ma réponse</button>
+                <button onClick={() => { setShowCorr(true); setTab("correction"); }} style={primBtn(T.green)}>
+                  ◉ Voir la correction complète
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* CORRECTION */}
+      {tab === "correction" && (
+        <div>
+          {!showCorr ? (
+            <div style={panelSt()}>
+              <PanelLabel color={T.green}>Correction</PanelLabel>
+              <p style={{ fontSize: 12.3, color: T.dim, lineHeight: 1.55, margin: "0 0 10px" }}>
+                Essaie d'abord de répondre toi-même et de vérifier tes critères. La correction
+                complète reste plus efficace une fois que tu as tenté l'exercice.
+              </p>
+              <button onClick={() => setShowCorr(true)} style={{ ...primBtn(T.green), width: "100%" }}>
+                Afficher la correction complète
+              </button>
+            </div>
+          ) : (
+            <div>
+              <div style={panelSt()}>
+                <PanelLabel color={T.green}>Correction</PanelLabel>
+                {exo.correction.map((b, i) => <Block key={i} b={b} color={T.green} />)}
+              </div>
+              <button onClick={() => handlers.markExo(exo.id)}
+                style={{ ...primBtn(done ? T.faint : T.green), width: "100%" }}>
+                {done ? "✓ Exercice marqué comme fait" : "Marquer comme fait"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ExoRunner({ exo, back, progress, handlers }) {
   const sj = subjectById(exo.subject);
+  if (EXO_INTERACTIVE[exo.id]) {
+    return <InteractiveExoView exo={exo} sj={sj} back={back} progress={progress} handlers={handlers} />;
+  }
   const [indice, setIndice] = useState(false);
   const [corr, setCorr] = useState(false);
   const done = (progress.exos || []).includes(exo.id);
@@ -8968,7 +9142,7 @@ function TrainingView({ progress, handlers, go, initialSubject, initialOpen }) {
   const [open, setOpen] = useState(initialOpen || null);
   if (open) {
     const sujet = SUJETS.find((t) => t.id === open);
-    return <TrainingRunner sujet={sujet} back={() => setOpen(null)} timed={false} />;
+    return <TrainingRunner sujet={sujet} back={() => setOpen(null)} timed={false} go={go} />;
   }
   const filtered = subj === "all" ? SUJETS : SUJETS.filter((t) => t.subject === subj);
   return (
@@ -8998,9 +9172,14 @@ function TrainingView({ progress, handlers, go, initialSubject, initialOpen }) {
             avec correction retranscrite des copies manuscrites. Les autres entrées « elec » sont des sujets
             d'entraînement inédits.
           </p>
-          <button onClick={() => go({ view: "entrainementelec" })} style={primBtn(T.green)}>
-            Ouvrir l'entraînement électronique
-          </button>
+          <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+            <button onClick={() => go({ view: "dselec" })} style={primBtn(T.green)}>
+              ◈ DS Électronique corrigés
+            </button>
+            <button onClick={() => go({ view: "entrainementelec" })} style={ghostBtn()}>
+              ✎ Entraînement électronique
+            </button>
+          </div>
         </div>
       )}
       {filtered.map((t) => {
@@ -9030,11 +9209,197 @@ function TrainingView({ progress, handlers, go, initialSubject, initialOpen }) {
   );
 }
 
-function TrainingRunner({ sujet, back, timed, onQuit, onComplete }) {
+/* ============ MISE EN PAGE TYPE COPIE DE PARTIEL ============ */
+
+function ExamHeader({ sujet, sj }) {
+  const nbEx = sujet.parts.length;
+  const nbQ = sujet.parts.reduce((n, p) => n + p.items.length, 0);
+  const kicker = sujet.level === "reel" ? "SUJET D'ANNALE" : "PARTIEL BLANC";
+  const meta = [
+    ["Durée conseillée", sujet.duration + " min"],
+    ["Barème total", "/ " + sujet.bareme],
+    ["Exercices", String(nbEx)],
+    ["Questions", String(nbQ)],
+  ];
+  return (
+    <div style={{
+      background: `linear-gradient(165deg, ${sj.color}14, ${T.bg2})`,
+      border: `1px solid ${sj.color}55`, borderRadius: 13,
+      padding: "16px 17px", marginBottom: 13,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 7 }}>
+        <span style={{
+          fontFamily: "'JetBrains Mono', monospace", fontSize: 9.5, fontWeight: 800, letterSpacing: 1.4,
+          color: sj.color, background: `${sj.color}1c`, border: `1px solid ${sj.color}55`,
+          borderRadius: 5, padding: "3px 8px",
+        }}>{kicker}</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: sj.color }}>{sj.name}</span>
+        <DiffBadge d={sujet.level} />
+      </div>
+      <h2 style={{ ...titleSt(20), margin: 0 }}>{sujet.title}</h2>
+      <div style={{
+        display: "flex", flexWrap: "wrap", gap: "7px 18px", marginTop: 10,
+        paddingTop: 9, borderTop: `1px solid ${sj.color}33`,
+      }}>
+        {meta.map(([k, v], i) => (
+          <div key={i}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8.6, color: T.faint, letterSpacing: 0.6 }}>{k.toUpperCase()}</div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 800, color: T.txt }}>{v}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{
+        marginTop: 11, background: T.bg, border: `1px solid ${T.line}`,
+        borderRadius: 9, padding: "9px 12px",
+      }}>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: T.faint, letterSpacing: 1, marginBottom: 4 }}>CONSIGNES</div>
+        <div style={{ fontSize: 11.7, color: T.dim, lineHeight: 1.6 }}>
+          Justifie chaque réponse et encadre tes résultats. Les applications numériques
+          doivent comporter une unité. Le barème est indicatif : sers-t'en pour doser ton
+          temps. Traite les exercices dans l'ordre que tu veux.
+        </div>
+      </div>
+      {sujet.tags && sujet.tags.length > 0 && (
+        <div>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: T.faint, letterSpacing: 1, margin: "11px 0 5px" }}>
+            CHAPITRES ÉVALUÉS
+          </div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {sujet.tags.map((t, i) => (
+              <span key={i} style={{
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 10.3, color: sj.color,
+                background: `${sj.color}16`, border: `1px solid ${sj.color}3a`,
+                borderRadius: 6, padding: "3px 8px",
+              }}>{t}</span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ExamExercise({ part, sj }) {
+  const totalPts = part.items.reduce((s, it) => s + (parseFloat(it.pts) || 0), 0);
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 10,
+      margin: "22px 0 11px", padding: "10px 13px",
+      background: T.bg3, borderRadius: 9, border: `1px solid ${T.line}`,
+      borderLeft: `3px solid ${sj.color}`,
+    }}>
+      <span style={{
+        fontFamily: "'JetBrains Mono', monospace", fontSize: 13.5, fontWeight: 800,
+        color: sj.color, lineHeight: 1.4,
+      }}>{part.title}</span>
+      {totalPts > 0 && (
+        <span style={{
+          marginLeft: "auto", fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+          fontWeight: 700, color: T.amber, background: `${T.amber}14`,
+          border: `1px solid ${T.amber}3a`, borderRadius: 6, padding: "3px 9px", whiteSpace: "nowrap",
+        }}>{totalPts} pts</span>
+      )}
+    </div>
+  );
+}
+
+function ExamQuestion({ n, pts, sj, big, checked, onCheck, revoir, onRevoir, children }) {
+  const accent = revoir ? T.coral : big ? sj.color : T.line;
+  return (
+    <div style={{
+      background: T.bg2, borderRadius: 11, marginBottom: 11, overflow: "hidden",
+      border: `1px solid ${revoir ? T.coral + "55" : big ? sj.color + "44" : T.line}`,
+      borderLeft: `3px solid ${accent}`,
+      opacity: checked ? 0.74 : 1,
+    }}>
+      <div style={{
+        display: "flex", alignItems: "center", gap: 8, padding: "8px 12px",
+        background: T.bg3, borderBottom: `1px solid ${T.line}`, flexWrap: "wrap",
+      }}>
+        <button onClick={onCheck} title="Marquer comme fait" style={{
+          width: 20, height: 20, borderRadius: 5, flexShrink: 0, cursor: "pointer",
+          background: checked ? T.green : "transparent",
+          border: `1.6px solid ${checked ? T.green : T.faint}`,
+          color: T.bg, fontSize: 12, fontWeight: 800,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>{checked ? "✓" : ""}</button>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12.5, fontWeight: 800, color: T.txt }}>
+          Question {n}
+        </span>
+        {big && (
+          <span style={{
+            fontFamily: "'JetBrains Mono', monospace", fontSize: 8.5, fontWeight: 700, color: sj.color,
+            background: `${sj.color}1c`, border: `1px solid ${sj.color}44`, borderRadius: 4, padding: "1px 5px",
+          }}>CLÉ</span>
+        )}
+        <button onClick={onRevoir} title="Marquer cette question à revoir" style={{
+          fontFamily: "'JetBrains Mono', monospace", fontSize: 9.3, fontWeight: 700, cursor: "pointer",
+          color: revoir ? T.coral : T.faint,
+          background: revoir ? `${T.coral}1a` : "transparent",
+          border: `1px solid ${revoir ? T.coral + "55" : T.line}`,
+          borderRadius: 5, padding: "2px 7px",
+        }}>{revoir ? "★ à revoir" : "☆ à revoir"}</button>
+        <span style={{
+          marginLeft: "auto", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 800,
+          color: T.amber, background: `${T.amber}14`, border: `1px solid ${T.amber}3a`,
+          borderRadius: 6, padding: "3px 9px", whiteSpace: "nowrap",
+        }}>{pts}</span>
+      </div>
+      <div style={{ padding: "12px 14px" }}>{children}</div>
+    </div>
+  );
+}
+
+function ExamCorrection({ blocks, fiches, go }) {
+  return (
+    <div style={{
+      background: "rgba(95,207,142,0.06)", border: `1px solid ${T.green}38`,
+      borderRadius: 9, padding: "10px 13px", marginTop: 10,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7 }}>
+        <span style={{ width: 7, height: 7, borderRadius: "50%", background: T.green, flexShrink: 0 }} />
+        <span style={{
+          fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 800,
+          letterSpacing: 1, color: T.green,
+        }}>CORRECTION DÉTAILLÉE</span>
+      </div>
+      {blocks.map((b, i) => <Block key={i} b={b} color={T.green} />)}
+      {fiches && fiches.length > 0 && (
+        <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid ${T.green}26` }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: T.faint, letterSpacing: 1, marginBottom: 5 }}>
+            FICHE À REVOIR SI BESOIN
+          </div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {fiches.map((fid) => {
+              const f = ALL_FICHES.find((x) => x.id === fid);
+              if (!f) return null;
+              return (
+                <button key={fid} onClick={() => go && go({ view: "subject", id: f.subject, fiche: f.id })}
+                  style={{
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: T.green,
+                    background: `${T.green}14`, border: `1px solid ${T.green}40`,
+                    borderRadius: 6, padding: "3px 8px", cursor: go ? "pointer" : "default",
+                  }}>{f.title} ›</button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TrainingRunner({ sujet, back, timed, onQuit, onComplete, go }) {
   const sj = subjectById(sujet.subject);
   const [reveal, setReveal] = useState({});   // itemKey -> {indice, corr}
   const [seconds, setSeconds] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [mode, setMode] = useState("entrainement"); // entrainement | sujet | correction
+  const [checks, setChecks] = useState({});
+  const [revoir, setRevoir] = useState({});
+  const totalQ = sujet.parts.reduce((n, p) => n + p.items.length, 0);
+  const doneQ = Object.values(checks).filter(Boolean).length;
+  const revoirQ = Object.values(revoir).filter(Boolean).length;
   const topRef = useRef(null);
   useEffect(() => { if (topRef.current) topRef.current.scrollIntoView({ block: "start" }); }, [finished]);
   useEffect(() => {
@@ -9075,6 +9440,12 @@ function TrainingRunner({ sujet, back, timed, onQuit, onComplete }) {
             Ce sujet portait sur les chapitres suivants. Reprends les fiches et exercices correspondants
             pour les questions où tu as hésité :
           </p>
+          {revoirQ > 0 && (
+            <p style={{
+              fontSize: 12.3, color: T.coral, lineHeight: 1.5, margin: "0 0 8px",
+              fontFamily: "'JetBrains Mono', monospace",
+            }}>★ Tu as marqué {revoirQ} question{revoirQ > 1 ? "s" : ""} « à revoir » — repasse dessus en priorité.</p>
+          )}
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
             {sujet.tags.map((t, i) => (
               <span key={i} style={{
@@ -9101,7 +9472,7 @@ function TrainingRunner({ sujet, back, timed, onQuit, onComplete }) {
         </div>
 
         <div style={{ display: "flex", gap: 9 }}>
-          <button onClick={() => { setFinished(false); setSeconds(0); setReveal({}); }} style={{ ...ghostBtn(), flex: 1 }}>
+          <button onClick={() => { setFinished(false); setSeconds(0); setReveal({}); setChecks({}); setRevoir({}); }} style={{ ...ghostBtn(), flex: 1 }}>
             Refaire ce sujet
           </button>
           <button onClick={onQuit || back} style={{ ...primBtn(sj.color), flex: 1 }}>Terminer</button>
@@ -9130,14 +9501,44 @@ function TrainingRunner({ sujet, back, timed, onQuit, onComplete }) {
         </div>
       )}
 
-      <div style={{ borderLeft: `3px solid ${sj.color}`, paddingLeft: 13, marginBottom: 12 }}>
-        <div style={{ display: "flex", gap: 7, alignItems: "center", flexWrap: "wrap" }}>
-          <span style={{ fontSize: 11, color: sj.color, fontFamily: "'JetBrains Mono', monospace" }}>{sj.name}</span>
-          <DiffBadge d={sujet.level} />
+      <ExamHeader sujet={sujet} sj={sj} />
+
+      <div style={{
+        background: T.bg2, border: `1px solid ${T.line}`, borderRadius: 11,
+        padding: "11px 13px", marginBottom: 12,
+      }}>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9.5, color: T.faint, letterSpacing: 1, marginBottom: 6 }}>
+          MODE D'AFFICHAGE
         </div>
-        <h2 style={{ ...titleSt(18), marginTop: 5 }}>{sujet.title}</h2>
-        <div style={{ fontSize: 11.3, color: T.faint, fontFamily: "'JetBrains Mono', monospace", marginTop: 3 }}>
-          Durée conseillée {sujet.duration} min · barème /{sujet.bareme}
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
+          {[
+            { id: "sujet", l: "Sujet" },
+            { id: "entrainement", l: "Entraînement" },
+            { id: "correction", l: "Correction" },
+          ].map((m) => (
+            <button key={m.id} onClick={() => setMode(m.id)} style={chip(sj.color, mode === m.id)}>{m.l}</button>
+          ))}
+        </div>
+        <div style={{ fontSize: 10.8, color: T.dim, lineHeight: 1.45, marginBottom: 9 }}>
+          {mode === "sujet" && "Énoncés seuls, comme en conditions d'examen — corrections masquées."}
+          {mode === "entrainement" && "Indices et corrections révélables question par question."}
+          {mode === "correction" && "Toutes les corrections sont affichées (révision)."}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+          <div style={{ flex: 1, height: 8, background: T.bg, borderRadius: 5, overflow: "hidden" }}>
+            <div style={{
+              width: `${totalQ ? (doneQ / totalQ) * 100 : 0}%`, height: "100%",
+              background: sj.color, transition: "width 0.25s",
+            }} />
+          </div>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: T.dim, whiteSpace: "nowrap" }}>
+            {doneQ}/{totalQ} faites
+          </span>
+          {revoirQ > 0 && (
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: T.coral, whiteSpace: "nowrap" }}>
+              ★ {revoirQ} à revoir
+            </span>
+          )}
         </div>
       </div>
 
@@ -9160,11 +9561,12 @@ function TrainingRunner({ sujet, back, timed, onQuit, onComplete }) {
               const f = ALL_FICHES.find((x) => x.id === fid);
               if (!f) return null;
               return (
-                <span key={fid} style={{
-                  fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: sj.color,
-                  background: `${sj.color}1a`, border: `1px solid ${sj.color}44`,
-                  borderRadius: 6, padding: "4px 8px",
-                }}>{f.title}</span>
+                <button key={fid} onClick={() => go && go({ view: "subject", id: f.subject, fiche: f.id })}
+                  style={{
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: sj.color,
+                    background: `${sj.color}1a`, border: `1px solid ${sj.color}44`,
+                    borderRadius: 6, padding: "4px 8px", cursor: go ? "pointer" : "default",
+                  }}>{f.title} ›</button>
               );
             })}
           </div>
@@ -9176,11 +9578,12 @@ function TrainingRunner({ sujet, back, timed, onQuit, onComplete }) {
               const e = EXOS.find((x) => x.id === eid);
               if (!e) return null;
               return (
-                <span key={eid} style={{
-                  fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: T.amber,
-                  background: `${T.amber}14`, border: `1px solid ${T.amber}44`,
-                  borderRadius: 6, padding: "4px 8px",
-                }}>{e.title}</span>
+                <button key={eid} onClick={() => go && go({ view: "exos" })}
+                  style={{
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: T.amber,
+                    background: `${T.amber}14`, border: `1px solid ${T.amber}44`,
+                    borderRadius: 6, padding: "4px 8px", cursor: go ? "pointer" : "default",
+                  }}>{e.title} ›</button>
               );
             })}
           </div>
@@ -9189,49 +9592,51 @@ function TrainingRunner({ sujet, back, timed, onQuit, onComplete }) {
 
       {sujet.parts.map((part, pi) => (
         <div key={pi}>
-          <div style={{
-            fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 700,
-            color: sj.color, margin: "15px 0 8px",
-          }}>{part.title}</div>
+          <ExamExercise part={part} sj={sj} />
           {part.items.map((it) => {
             const key = `${pi}-${it.n}`;
             const r = reveal[key] || {};
+            const forced = mode === "correction";
+            const showInd = r.indice || forced;
+            const showCorr = r.corr || forced;
+            const checked = !!checks[key];
+            const isRevoir = !!revoir[key];
+            const big = parseFloat(it.pts) >= 3;
             return (
-              <div key={key} style={panelSt()}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 800, color: T.txt }}>{it.n}</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: T.faint }}>{it.pts}</span>
-                </div>
-                {it.q.map((b, j) => <Block key={j} b={b} color={sj.color} />)}
-
-                <div style={{ display: "flex", gap: 8, marginTop: 9, flexWrap: "wrap" }}>
-                  {!r.indice && (
-                    <button onClick={() => setKey(key, "indice")} style={ghostBtn()}>💡 Voir l'indice</button>
-                  )}
-                  {!r.corr && (
-                    <button onClick={() => setKey(key, "corr")} style={primBtn(sj.color)}>Voir la correction</button>
-                  )}
+              <ExamQuestion key={key} n={it.n} pts={it.pts} sj={sj} big={big}
+                checked={checked} onCheck={() => setChecks((c) => ({ ...c, [key]: !c[key] }))}
+                revoir={isRevoir} onRevoir={() => setRevoir((c) => ({ ...c, [key]: !c[key] }))}>
+                <div style={{ fontSize: 13.3, color: T.txt, lineHeight: 1.62 }}>
+                  {it.q.map((b, j) => <Block key={j} b={b} color={sj.color} />)}
                 </div>
 
-                {r.indice && (
+                {mode === "entrainement" && (!showInd || !showCorr) && (
+                  <div style={{
+                    display: "flex", gap: 8, marginTop: 11, flexWrap: "wrap",
+                    paddingTop: 10, borderTop: `1px solid ${T.line}`,
+                  }}>
+                    {!showInd && it.indice && (
+                      <button onClick={() => setKey(key, "indice")} style={ghostBtn()}>💡 Voir l'indice</button>
+                    )}
+                    {!showCorr && (
+                      <button onClick={() => setKey(key, "corr")} style={primBtn(sj.color)}>Voir la correction</button>
+                    )}
+                  </div>
+                )}
+
+                {showInd && it.indice && (
                   <div style={{
                     background: "rgba(232,200,74,0.08)", border: `1px solid ${T.yellow}44`,
-                    borderRadius: 9, padding: "9px 12px", marginTop: 9,
+                    borderRadius: 9, padding: "9px 12px", marginTop: 10,
                   }}>
                     <PanelLabel color={T.yellow}>Indice</PanelLabel>
                     <div style={{ fontSize: 12.7, color: T.txt, lineHeight: 1.55 }}>{it.indice}</div>
                   </div>
                 )}
-                {r.corr && (
-                  <div style={{
-                    background: "rgba(95,207,142,0.07)", border: `1px solid ${T.green}33`,
-                    borderRadius: 9, padding: "9px 12px", marginTop: 9,
-                  }}>
-                    <PanelLabel color={T.green}>Correction</PanelLabel>
-                    {it.c.map((b, j) => <Block key={j} b={b} color={T.green} />)}
-                  </div>
+                {showCorr && (
+                  <ExamCorrection blocks={it.c} fiches={sujet.revision && sujet.revision.fiches} go={go} />
                 )}
-              </div>
+              </ExamQuestion>
             );
           })}
         </div>
@@ -9577,6 +9982,7 @@ function PartielSoonView({ go }) {
     { l: "Quiz formules", d: "Mémorise les formules clés", i: "⊕", c: T.cyan, v: "formulesquiz" },
     { l: "Exercices prioritaires", d: "Exos corrigés à refaire en priorité", i: "✎", c: T.amber, v: "exos" },
     { l: "Partiel blanc", d: "Sujet chronométré + bilan", i: "⏱", c: T.blue, v: "partielblanc" },
+    { l: "DS Électronique corrigés", d: "Les 3 vrais DS d'élec, corrigés", i: "⏚", c: T.green, v: "dselec" },
     { l: "Ce qui tombe souvent", d: "Chapitres et pièges récurrents", i: "◆", c: T.violet, v: "tombe" },
     { l: "Méthodes de partiel", d: "Gérer l'énoncé, le temps, la copie", i: "✓", c: T.green, v: "methodespartiel" },
   ];
@@ -9643,6 +10049,20 @@ function PartielSoonView({ go }) {
   );
 }
 
+const TOMBE_ELEC = [
+  { t: "Thévenin / Norton", v: "Calculer Rth (sources indépendantes éteintes), Eth à vide, In en court-circuit, puis le courant dans la charge par diviseur de courant." },
+  { t: "Sources liées", v: "Calculer Rth en injectant un générateur de test — la source liée reste active, on ne l'éteint jamais." },
+  { t: "Théorème de Millman", v: "Trouver le potentiel d'un nœud, puis en déduire le courant d'une branche par la loi d'Ohm." },
+  { t: "Méthode des nœuds", v: "Mettre un circuit à plusieurs potentiels inconnus en équations, puis résoudre le système." },
+  { t: "AOP en régime linéaire", v: "Justifier le régime linéaire (V+ = V−) et calculer la tension de sortie via Millman ou un diviseur de tension." },
+  { t: "Trigger de Schmitt", v: "Déterminer les seuils VH et VL, tracer la caractéristique Vout = f(Vin), donner un exemple d'utilisation." },
+  { t: "Filtres RC", v: "Donner les schémas équivalents BF/HF, en déduire la nature du filtre et la fonction de transfert H(jω)." },
+  { t: "Diagrammes de Bode", v: "Tracer le gain et la phase asymptotiques, placer la pente ±20 dB/déc et le point −3 dB, calculer ωc." },
+  { t: "Valeur moyenne / efficace", v: "Calculer ⟨s⟩ et S d'un signal créneau à partir de l'aire et de l'aire du carré du signal." },
+  { t: "Séries de Fourier", v: "Exprimer les coefficients An/Bn et exploiter la parité du signal (Bn = 0 si pair, An = 0 si impair)." },
+  { t: "Condensateur de découplage", v: "Nommer et expliquer le rôle du condensateur d'un filtre passe-bas : il dérive les hautes fréquences vers la masse." },
+];
+
 function DSElecView({ go }) {
   const ids = ["a-elec-1", "a-elec-2", "a-elec-3"];
   const diffMap = { "a-elec-1": "Difficile", "a-elec-2": "Moyen", "a-elec-3": "Moyen" };
@@ -9706,6 +10126,22 @@ function DSElecView({ go }) {
           </div>
         );
       })}
+      <SectionLabel>Ce qui tombe souvent en DS Électronique</SectionLabel>
+      <div style={{ background: T.bg2, border: `1px solid ${T.line}`, borderRadius: 11, padding: "6px 13px 10px" }}>
+        {TOMBE_ELEC.map((x, i) => (
+          <div key={i} style={{
+            padding: "8px 0",
+            borderBottom: i < TOMBE_ELEC.length - 1 ? `1px solid ${T.line}` : "none",
+          }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "baseline" }}>
+              <span style={{ color: T.amber, fontSize: 11 }}>◆</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 700, color: T.txt }}>{x.t}</span>
+            </div>
+            <p style={{ fontSize: 11.7, color: T.dim, lineHeight: 1.5, margin: "3px 0 0 19px" }}>{x.v}</p>
+          </div>
+        ))}
+      </div>
+
       <SectionLabel>Aller plus loin</SectionLabel>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         <button onClick={() => go({ view: "entrainementelec" })} style={ghostBtn()}>✎ Exercices issus des DS</button>
@@ -9856,6 +10292,86 @@ function ReconnaitreElecView({ go }) {
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
         <button onClick={() => go({ view: "dselec" })} style={primBtn(T.green)}>◈ Voir les DS corrigés</button>
         <button onClick={() => go({ view: "formules", subject: "elec" })} style={ghostBtn()}>∑ Formules d'électronique</button>
+      </div>
+    </div>
+  );
+}
+
+const RECO_INFO = [
+  { type: "Pointeurs & syntaxe C", c: T.cyan,
+    rec: "On travaille sur des pointeurs (*, &), l'accès à un champ via -> ou la déréférence (*p).champ.",
+    met: "Identifier si le pointeur pointe vers une donnée ou une structure. Utiliser -> pour les structures, * pour les scalaires. Bien passer l'adresse avec & dans scanf.",
+    pie: "Oublier le & dans scanf, confondre * (déréférence) et & (adresse), ou utiliser -> sur une variable non pointeur.",
+    fo: "p->champ  ≡  (*p).champ" },
+  { type: "Allocation dynamique (malloc / free)", c: T.amber,
+    rec: "On crée ou libère de la mémoire au runtime : tableau de taille inconnue, champ dynamique dans une structure.",
+    met: "1. Décider la taille (n × sizeof(type)). 2. Appeler malloc, vérifier si NULL. 3. Utiliser la mémoire. 4. Libérer dans l'ordre inverse : les champs dynamiques AVANT la structure.",
+    pie: "Free la structure avant son champ dynamique (fuite mémoire), oublier de tester le retour de malloc, confondre la taille en octets et le nombre d'éléments.",
+    fo: "malloc(n * sizeof(type))  ;  free dans l'ordre inverse de l'allocation" },
+  { type: "Structures à champ dynamique", c: T.green,
+    rec: "Une struct contient un char* (ou un tableau de taille variable) qui doit être alloué séparément.",
+    met: "Lire un champ char* : fgets → strcspn (retirer \\n) → malloc(strlen+1) → strcpy. Libérer le char* AVANT le struct.",
+    pie: "Oublier strcspn (le \\n reste dans la chaîne), malloc de strlen sans +1 (pas de place pour \\0), ou free dans le mauvais ordre.",
+    fo: "s.nom = malloc(strlen(buf)+1)  ;  strcpy(s.nom, buf)" },
+  { type: "Piles & files (LIFO / FIFO)", c: T.violet,
+    rec: "On traite des éléments dans un ordre particulier : LIFO (pile, dernier entré = premier sorti) ou FIFO (file, premier entré = premier sorti).",
+    met: "Choisir pile ou file selon l'ordre de traitement. Pour parcourir ET libérer : while(!vide) → dépiler/défiler → traiter → (stocker si besoin). Pour inverser : vider dans une pile, puis revider.",
+    pie: "Réenfiler en parcourant une file → boucle infinie. Mal caster le void* renvoyé par defiler. Confondre tête (out) et queue (in) d'une file.",
+    fo: "while(!fileVide(f)) { e = defiler(f); ... }  ;  empiler(p, e)" },
+  { type: "Listes chaînées", c: T.coral,
+    rec: "Un maillon contient une donnée et un pointeur vers le maillon suivant (next). On parcourt avec une boucle while(p != NULL).",
+    met: "Parcours : p = tête, while(p) { traiter p->data ; p = p->next; }. Insertion en tête : crée maillon, next = ancienne tête, tête = maillon. Libération : parcourir et free chaque maillon.",
+    pie: "Perdre la référence à la tête. Oublier de mettre next = NULL sur le dernier maillon. Free le maillon avant d'avoir sauvegardé p->next.",
+    fo: "Noeud* n = malloc(sizeof(Noeud)) ; n->next = tete ; tete = n" },
+  { type: "Récursivité", c: T.yellow,
+    rec: "Une fonction qui s'appelle elle-même. On reconnaît un cas de base (arrêt) et un cas récursif (décomposition).",
+    met: "1. Identifier le cas de base (liste vide, n=0, condition d'arrêt). 2. Écrire le cas récursif qui réduit le problème. 3. Vérifier sur un petit exemple à la main (pile d'appels).",
+    pie: "Oublier le cas de base → récursion infinie. Se tromper sur la condition d'arrêt. Ne pas retourner la valeur de l'appel récursif.",
+    fo: "if(cas_base) return val_base ; return f(n-1) + ..." },
+];
+
+function ReconnaitreInfoView({ go }) {
+  return (
+    <div>
+      <BackBar onBack={() => go({ view: "subject", id: "info" })} label="Informatique" />
+      <h2 style={{ ...titleSt(20), marginBottom: 3 }}>Reconnaître l'exercice en informatique</h2>
+      <p style={{ fontSize: 12.5, color: T.dim, marginBottom: 14, lineHeight: 1.5 }}>
+        Le réflexe clé : identifier le type d'exercice pour appliquer la bonne méthode.
+        Voici les 6 cas du programme.
+      </p>
+      {RECO_INFO.map((r) => (
+        <div key={r.type} style={{
+          background: T.bg2, border: `1px solid ${r.c}44`, borderLeft: `3px solid ${r.c}`,
+          borderRadius: 11, padding: "12px 14px", marginBottom: 9,
+        }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 800, color: r.c, marginBottom: 7 }}>
+            {r.type}
+          </div>
+          {[
+            { l: "Comment le reconnaître", v: r.rec, ic: "◆", ic_c: r.c },
+            { l: "Méthode à appliquer", v: r.met, ic: "→", ic_c: T.green },
+            { l: "Piège fréquent", v: r.pie, ic: "✗", ic_c: T.coral },
+          ].map((row) => (
+            <div key={row.l} style={{ display: "flex", gap: 8, margin: "5px 0" }}>
+              <span style={{ color: row.ic_c, fontSize: 11, marginTop: 2, width: 12, flexShrink: 0, textAlign: "center" }}>{row.ic}</span>
+              <div style={{ fontSize: 12, lineHeight: 1.5 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: T.faint, letterSpacing: 0.5 }}>{row.l.toUpperCase()}</div>
+                <div style={{ color: T.txt }}>{row.v}</div>
+              </div>
+            </div>
+          ))}
+          <div style={{
+            background: `${r.c}10`, border: `1px solid ${r.c}33`, borderRadius: 7,
+            padding: "6px 10px", marginTop: 7,
+          }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9.5, color: T.faint }}>FORMULE / RÈGLE UTILE</div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11.5, color: T.txt, marginTop: 1 }}>{r.fo}</div>
+          </div>
+        </div>
+      ))}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
+        <button onClick={() => go({ view: "exos" })} style={primBtn(T.cyan)}>✎ Exercices info</button>
+        <button onClick={() => go({ view: "subject", id: "info" })} style={ghostBtn()}>▣ Fiches info</button>
       </div>
     </div>
   );
@@ -10034,6 +10550,7 @@ const NAV_GROUPS = [
     { view: "subject", id: "elec", label: "Fiches · Électronique", icon: "⏚" },
     { view: "formules", label: "Formules", icon: "∑" },
     { view: "methodes", label: "Méthodes types", icon: "◎" },
+    { view: "reconnaitreinfo", label: "Reconnaître un exo (info)", icon: "▶" },
     { view: "erreurs", label: "Erreurs fréquentes", icon: "✗" },
     { view: "videos", label: "Vidéos", icon: "▶" },
     { view: "documents", label: "Documents", icon: "▤" },
@@ -10386,6 +10903,7 @@ export default function App() {
             {route.view === "dselec" && <DSElecView go={go} />}
             {route.view === "schemaselec" && <SchemasElecView go={go} />}
             {route.view === "reconnaitreelec" && <ReconnaitreElecView go={go} />}
+            {route.view === "reconnaitreinfo" && <ReconnaitreInfoView go={go} />}
             {route.view === "reviserannale" && <ReviserAnnaleView progress={progress} handlers={handlers} go={go} />}
             {route.view === "search" && <SearchView query={route.q} go={go} />}
           </>
